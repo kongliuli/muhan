@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using ModernBoxes.Core.Interfaces;
 using ModernBoxes.Core.Models;
+using ModernBoxes.Desktop.Presentation;
 using ModernBoxes.Infrastructure;
 using ModernBoxes.Infrastructure.Plugins;
 using System;
@@ -80,7 +81,7 @@ namespace ModernBoxes.Presentation.ViewModels
                         IsChecked = config?.IsChecked ?? false,
                         CardID = config?.CardID ?? nextCardId++,
                         CardHeight = config?.CardHeight ?? viewModel.CardHeight,
-                        CardContent = viewModel
+                        CardContent = CardViewResolver.Resolve(cardMeta.CardName, cardMeta.ViewType, viewModel)
                     };
 
                     _ = Application.Current.Dispatcher.InvokeAsync(() => CardContents.Add(content));

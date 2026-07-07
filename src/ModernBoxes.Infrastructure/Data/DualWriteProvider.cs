@@ -37,7 +37,7 @@ namespace ModernBoxes.Infrastructure.Data
             if (!_entityMap.TryGetValue(entityName, out var entry))
                 throw new ArgumentException($"Unknown entity: {entityName}");
 
-            string path = Path.Combine(AppContext.BaseDirectory, entry.FilePath);
+            string path = AppPaths.Config(entry.FilePath);
             string json = JsonConvert.SerializeObject(data);
             // FileHelper.WriteFile 内部走临时文件+替换，原子写入，无需先删除
             await FileHelper.WriteFile(path, json);
@@ -49,7 +49,7 @@ namespace ModernBoxes.Infrastructure.Data
             if (!_entityMap.TryGetValue(entityName, out var entry))
                 throw new ArgumentException($"Unknown entity: {entityName}");
 
-            string path = Path.Combine(AppContext.BaseDirectory, entry.FilePath);
+            string path = AppPaths.Config(entry.FilePath);
             if (!File.Exists(path))
                 return Array.Empty<T>();
 

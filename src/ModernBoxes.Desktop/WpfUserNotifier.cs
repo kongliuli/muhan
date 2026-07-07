@@ -15,4 +15,13 @@ public class WpfUserNotifier : IUserNotifier
         dialog.SetContent(new UcMessageDialog(message, MessageDialogState.waring));
         dialog.ShowDialog();
     }
+
+    public bool ShowConfirm(string title, string message)
+    {
+        return System.Windows.MessageBox.Show(
+            message,
+            title,
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Information) == System.Windows.MessageBoxResult.Yes;
+    }
 }

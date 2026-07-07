@@ -1,8 +1,7 @@
+using ModernBoxes.Infrastructure.Data;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Configuration;
 using System.IO;
-using System.Linq;
 
 namespace ModernBoxes.Infrastructure.Data
 {
@@ -13,9 +12,9 @@ namespace ModernBoxes.Infrastructure.Data
 
         public static void MigrateIfNeeded(IConfigBackupService backupService)
         {
-            bool needsAppConfig = NeedsAppConfigMigration();
+            bool needsLayout = NeedsLayoutMigration();
             bool needsCardsJson = NeedsCardsJsonMigration();
-            if (!needsAppConfig && !needsCardsJson)
+            if (!needsLayout && !needsCardsJson)
                 return;
 
             var backupDir = backupService.CreatePreMigrateBackup();
@@ -25,9 +24,9 @@ namespace ModernBoxes.Infrastructure.Data
                 return;
             }
 
-            if (needsAppConfig && !TryMigrateAppConfig())
+            if (needsLayout && !TryMigrateLayoutKey())
             {
-                Logger.Warn("App.config migration failed; originals preserved in backup");
+                Logger.Warn("settings.json layout migration failed; originals preserved in backup");
                 return;
             }
 
@@ -37,11 +36,10 @@ namespace ModernBoxes.Infrastructure.Data
             }
         }
 
-        private static bool NeedsAppConfigMigration()
+        private static bool NeedsLayoutMigration()
         {
-            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            return config.AppSettings.Settings[OldLayoutKey] != null
-                   && config.AppSettings.Settings[NewLayoutKey] == null;
+            return !string.IsNullOrEmpty(ConfigHelper.getConfig(OldLayoutKey))
+                   && string.IsNullOrEmpty(ConfigHelper.getConfig(NewLayoutKey));
         }
 
         private static bool NeedsCardsJsonMigration()
@@ -62,30 +60,20 @@ namespace ModernBoxes.Infrastructure.Data
             }
         }
 
-        private static bool TryMigrateAppConfig()
+        private static bool TryMigrateLayoutKey()
         {
             try
             {
-                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                var old = config.AppSettings.Settings[OldLayoutKey];
-                if (old == null)
+                var old = ConfigHelper.getConfig(OldLayoutKey);
+                if (string.IsNullOrEmpty(old))
                     return true;
-
-                var value = old.Value;
-                if (config.AppSettings.Settings[NewLayoutKey] == null)
-                    config.AppSettings.Settings.Add(NewLayoutKey, value);
-                else
-                    config.AppSettings.Settings[NewLayoutKey].Value = value;
-
-                config.AppSettings.Settings.Remove(OldLayoutKey);
-                config.Save(ConfigurationSaveMode.Modified);
-                ConfigurationManager.RefreshSection("appSettings");
-                Logger.Info($"Migrated App.config key {OldLayoutKey} -> {NewLayoutKey}");
+                ConfigHelper.SetComponentLayout(old);
+                Logger.Info($"Migrated settings key {OldLayoutKey} -> {NewLayoutKey}");
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "App.config migration error");
+                Logger.Error(ex, "settings layout migration error");
                 return false;
             }
         }

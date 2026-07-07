@@ -8,12 +8,7 @@ namespace ModernBoxes.Infrastructure
 {
     public class GetIcon
     {
-        /// <summary>
-        /// ��ȡͼ��
-        /// </summary>
-        /// <param name="FilePath">�ļ���ַ</param>
-        /// <param name="savePath">�����ַ</param>
-        /// <param name="FileName">�ļ�����</param>
+        /// <summary>提取文件图标到指定目录</summary>
         [STAThread]
         public static void getFileIcon(String FilePath, String savePath, String FileName)
         {

@@ -32,7 +32,7 @@ namespace ModernBoxes.Presentation.ViewModels
             set { noteColor = value; OnPropertyChanged("NoteColor"); }
         }
 
-        private NoteModel editNote;
+        private NoteModel? editNote;
 
         private Boolean isEditMode;
 

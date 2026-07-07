@@ -108,7 +108,7 @@ namespace ModernBoxes.Presentation.ViewModels
                     Menu.Target = openFileDialog.FileName;
                     if (Menu.Target.Substring(Menu.Target.LastIndexOf('.') + 1) == "exe")
                     {
-                        String iconPath = Path.Combine(AppContext.BaseDirectory, "icons");
+                        string iconPath = AppPaths.Icons;
                         String fileName = $"{DateTime.Now:yyyyMMddHHmmss}.ico";
                         GetIcon.getFileIcon(Menu.Target, iconPath + "\\", fileName);
                         Menu.Icon = Path.Combine(iconPath, fileName);

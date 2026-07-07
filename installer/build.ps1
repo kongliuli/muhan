@@ -1,38 +1,37 @@
-# Build script for ModernBoxes MSIX package
-param([string]$Configuration = "Release", [string]$Version = "1.0.0")
+# Build & publish ModernBoxes for GitHub Release
+param(
+    [string]$Configuration = "Release",
+    [string]$Version = "1.0.0"
+)
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$desktopProject = Join-Path $projectRoot "src\ModernBoxes.Desktop\ModernBoxes.Desktop.csproj"
+$publishDir = Join-Path $projectRoot "publish"
+$zipPath = Join-Path $projectRoot "ModernBoxes-$Version-win-x64.zip"
 
-Write-Host "Building ModernBoxes v$Version in $Configuration mode..."
+Write-Host "Publishing ModernBoxes v$Version ($Configuration)..."
 
-# 1. Publish project
-$publishDir = "$projectRoot\publish"
-dotnet publish "$projectRoot\ModernBoxes.csproj" -c $Configuration -o $publishDir
-if ($LASTEXITCODE -ne 0) { throw "Publish failed" }
+dotnet publish $desktopProject `
+    -c $Configuration `
+    -r win-x64 `
+    --self-contained false `
+    -p:PublishSingleFile=true `
+    -p:IncludeNativeLibrariesForSelfExtract=true `
+    -o $publishDir
 
-# 2. Check for MakeAppx
+if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
+
+if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+Compress-Archive -Path (Join-Path $publishDir "*") -DestinationPath $zipPath
+
+Write-Host "Publish output: $publishDir"
+Write-Host "Release zip: $zipPath"
+
+# Optional MSIX when Windows SDK is available
 $makeAppx = Get-Command "MakeAppx.exe" -ErrorAction SilentlyContinue
-if (-not $makeAppx) {
-    Write-Host "WARNING: MakeAppx.exe not found. Skipping MSIX packaging."
-    Write-Host "Install Windows SDK to enable packaging."
-    Write-Host "Publish output is at: $publishDir"
-    exit 0
-}
-
-# 3. Create MSIX
-$outputMsix = "$projectRoot\ModernBoxes_${Version}_x64.msix"
-& $makeAppx pack /d $publishDir /p $outputMsix /f "$PSScriptRoot\AppxManifest.xml"
-if ($LASTEXITCODE -ne 0) { throw "MakeAppx failed" }
-
-Write-Host "MSIX package created: $outputMsix"
-
-# 4. Sign (if cert available)
-$cert = Get-ChildItem "$PSScriptRoot\*.pfx" -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($cert) {
-    $signTool = Get-Command "SignTool.exe" -ErrorAction SilentlyContinue
-    if ($signTool) {
-        & $signTool sign /fd SHA256 /f $cert.FullName $outputMsix
-        Write-Host "Signed with: $($cert.Name)"
-    }
+if ($makeAppx) {
+    $outputMsix = Join-Path $projectRoot "ModernBoxes_${Version}_x64.msix"
+    & $makeAppx pack /d $publishDir /p $outputMsix /f (Join-Path $PSScriptRoot "AppxManifest.xml")
+    if ($LASTEXITCODE -eq 0) { Write-Host "MSIX: $outputMsix" }
 }

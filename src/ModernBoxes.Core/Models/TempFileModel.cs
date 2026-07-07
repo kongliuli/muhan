@@ -6,26 +6,20 @@ namespace ModernBoxes.Core.Models
 {
     public class TempFileModel : ObservableObject
     {
-        /// <summary>
-        /// 文件路径
-        /// </summary>
-        private String filePath;
+        private string filePath = string.Empty;
 
-        public String FilePath
+        public string FilePath
         {
-            get { return filePath; }
-            set { filePath = value; OnPropertyChanged("FilePath"); }
+            get => filePath;
+            set { filePath = value; OnPropertyChanged(nameof(FilePath)); }
         }
 
-        /// <summary>
-        /// 文件类型
-        /// </summary>
         private DirEnum fileKind;
 
         public DirEnum FileKind
         {
-            get { return fileKind; }
-            set { fileKind = value; OnPropertyChanged("FileKind"); }
+            get => fileKind;
+            set { fileKind = value; OnPropertyChanged(nameof(FileKind)); }
         }
     }
 }

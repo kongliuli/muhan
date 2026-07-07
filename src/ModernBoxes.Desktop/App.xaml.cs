@@ -70,6 +70,7 @@ namespace ModernBoxes
                     services.AddHostedService<TrayHostedService>();
                     services.AddHostedService<HotkeyHostedService>();
                     services.AddHostedService<AutoUpdateService>();
+                    services.AddHostedService<StartMenuScannerService>();
 
                     CardPluginLoader.DiscoverAndRegister(services, typeof(NoteCardViewModel).Assembly);
                 })
@@ -79,6 +80,8 @@ namespace ModernBoxes
         protected override async void OnStartup(StartupEventArgs e)
         {
             GlobalExceptionHandler.Register();
+
+            DataDirectoryMigrationService.MigrateIfNeeded();
 
             ConfigMigrationService.MigrateIfNeeded(
                 AppHost!.Services.GetRequiredService<IConfigBackupService>());
@@ -93,6 +96,8 @@ namespace ModernBoxes
                 AppHost.Services.GetRequiredService<ICardConfigRepository>());
 
             await AppHost.Services.GetRequiredService<FirstRunSetupService>().EnsureFirstRunAsync();
+
+            CardPluginLoader.MergePluginResourceDictionaries();
 
             base.OnStartup(e);
 

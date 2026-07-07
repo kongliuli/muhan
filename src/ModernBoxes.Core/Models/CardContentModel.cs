@@ -9,63 +9,48 @@ namespace ModernBoxes.Core.Models
 
         public int CardID
         {
-            get { return cardId; }
-            set { cardId = value; }
+            get => cardId;
+            set => cardId = value;
         }
 
-        /// <summary>
-        /// 卡片名称
-        /// </summary>
-        private String cardName;
+        private string cardName = string.Empty;
 
-        public String CardName
+        public string CardName
         {
-            get { return cardName; }
-            set { cardName = value; }
+            get => cardName;
+            set => cardName = value;
         }
 
-        /// <summary>
-        /// 卡片内容
-        /// </summary>
-        private Object cardContent;
+        private object? cardContent;
 
-        public Object CardContent
+        public object? CardContent
         {
-            get { return cardContent; }
-            set { cardContent = value; }
+            get => cardContent;
+            set => cardContent = value;
         }
 
-        /// <summary>
-        /// 卡片高度
-        /// </summary>
-        private Double cardHeight = 200;
+        private double cardHeight = 200;
 
-        public Double CardHeight
+        public double CardHeight
         {
-            get { return cardHeight; }
-            set { cardHeight = value; OnPropertyChanged("CardHeight"); }
+            get => cardHeight;
+            set { cardHeight = value; OnPropertyChanged(nameof(CardHeight)); }
         }
 
-        /// <summary>
-        /// 预览图
-        /// </summary>
-        private String preview;
+        private string preview = string.Empty;
 
-        public String Preview
+        public string Preview
         {
-            get { return preview; }
-            set { preview = value; }
+            get => preview;
+            set => preview = value;
         }
 
-        /// <summary>
-        /// 是否选中
-        /// </summary>
-        private Boolean isChecked;
+        private bool isChecked;
 
-        public Boolean IsChecked
+        public bool IsChecked
         {
-            get { return isChecked; }
-            set { isChecked = value; OnPropertyChanged("IsChecked"); }
+            get => isChecked;
+            set { isChecked = value; OnPropertyChanged(nameof(IsChecked)); }
         }
     }
 }

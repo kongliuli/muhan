@@ -47,7 +47,7 @@ namespace ModernBoxes.Presentation.ViewModels
             set { isShow = value; OnPropertyChanged("IsShowBgEmpty"); }
         }
 
-        private NoteModel selectedNote;
+        private NoteModel? selectedNote;
 
         public NoteModel SelectedNote
         {

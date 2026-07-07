@@ -12,7 +12,10 @@ namespace ModernBoxes.Cards;
 public class OneWordCardViewModel : CardBase<OneWordModel>
 {
     private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(5) };
-    private static readonly string _cachePath = Path.Combine(AppContext.BaseDirectory, "OneWordCache.json");
+    private static readonly string _cachePath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "ModernBoxes",
+        "OneWordCache.json");
 
     public OneWordCardViewModel() : base(new OneWordModel())
     {

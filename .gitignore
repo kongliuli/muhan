@@ -9,3 +9,5 @@ TestResults/
 *.trx
 OneWordCache.json
 .cursor/
+publish/
+ModernBoxes-*.zip

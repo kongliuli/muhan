@@ -66,7 +66,7 @@ namespace ModernBoxes.Presentation.ViewModels
                     if (dirKind[3])
                         DirModel.TempDirImportantKind = DirEnum.dirSecondary;
 
-                    var dirCache = Path.Combine(AppContext.BaseDirectory, "DirCache");
+                    var dirCache = AppPaths.DirCache;
                     if (TB_DirRef?.Visibility == System.Windows.Visibility.Collapsed)
                     {
                         // 新建文件夹模式：在缓存目录下创建

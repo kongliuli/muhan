@@ -1,7 +1,9 @@
 using ModernBoxes.Core.Interfaces;
-using ModernBoxes.Core.Models;
 using ModernBoxes.Core.Interfaces.Repositories;
+using ModernBoxes.Core.Models;
+using ModernBoxes.Infrastructure.Search;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ModernBoxes.Infrastructure.Services
@@ -46,7 +48,49 @@ namespace ModernBoxes.Infrastructure.Services
             results.AddRange(fileTask.Result);
             results.AddRange(noteTask.Result);
 
+            if (NeedsPinyinExpand(query, results))
+            {
+                var allMenus = Task.Run(() => _menuRepo.SearchMenus("")).Result;
+                var allApps = Task.Run(() => _appRepo.SearchApplications("")).Result;
+                var allDirs = Task.Run(() => _dirRepo.SearchTempDirs("")).Result;
+                var allFiles = Task.Run(() => _fileRepo.SearchTempFiles("")).Result;
+                var allNotes = Task.Run(() => _noteRepo.SearchNotes("")).Result;
+
+                MergePinyinResults(results, allMenus, query, r => r.Name);
+                MergePinyinResults(results, allApps, query, r => r.Name);
+                MergePinyinResults(results, allDirs, query, r => r.Name);
+                MergePinyinResults(results, allFiles, query, r => r.Name);
+                MergePinyinResults(results, allNotes, query, r => r.Name);
+            }
+
             return results;
+        }
+
+        private static bool NeedsPinyinExpand(string query, List<SearchResultModel> current)
+        {
+            return current.Count == 0 && ChinesePinyinHelper.LooksLikePinyinQuery(query);
+        }
+
+        private static void MergePinyinResults(
+            List<SearchResultModel> target,
+            List<SearchResultModel>? candidates,
+            string query,
+            System.Func<SearchResultModel, string> nameSelector)
+        {
+            if (candidates == null || candidates.Count == 0)
+                return;
+
+            foreach (var item in candidates)
+            {
+                var name = nameSelector(item);
+                if (string.IsNullOrEmpty(name))
+                    continue;
+                if (!ChinesePinyinHelper.Matches(query, name))
+                    continue;
+                if (target.Any(x => x.Type == item.Type && x.Name == item.Name))
+                    continue;
+                target.Add(item);
+            }
         }
     }
 }

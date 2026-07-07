@@ -4,36 +4,9 @@ namespace ModernBoxes.Core.Models
 {
     public class FileInformationModel
     {
-        private String filePath;
-
-        public String FilePath
-        {
-            get { return filePath; }
-            set { filePath = value; }
-        }
-
-        private String createTime;
-
-        public String CreateTime
-        {
-            get { return createTime; }
-            set { createTime = value; }
-        }
-
-        private String changeTime;
-
-        public String ChangeTime
-        {
-            get { return changeTime; }
-            set { changeTime = value; }
-        }
-
-        private String size;
-
-        public String Size
-        {
-            get { return size; }
-            set { size = value; }
-        }
+        public string FilePath { get; set; } = string.Empty;
+        public string CreateTime { get; set; } = string.Empty;
+        public string ChangeTime { get; set; } = string.Empty;
+        public string Size { get; set; } = string.Empty;
     }
 }

@@ -1,12 +1,17 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using ModernBoxes.Desktop;
 using ModernBoxes.Infrastructure;
-using ModernBoxes.Presentation.Views;
 using ModernBoxes.Presentation.Dialogs;
+using ModernBoxes.Presentation.ViewModels;
+using ModernBoxes.Presentation.Views;
+using System;
 
 namespace ModernBoxes.Presentation.ViewModels
 {
     public partial class HotkeyViewModel : ObservableObject
     {
+        private readonly SearchViewModel _searchViewModel;
+        private QuickLaunchWindow? _quickLaunchWindow;
         private bool _isLoading;
 
         private string _showHideHotkey = "Ctrl+Shift+M";
@@ -37,8 +42,23 @@ namespace ModernBoxes.Presentation.ViewModels
             }
         }
 
-        public HotkeyViewModel()
+        private string _paletteHotkey = "Alt+Space";
+        public string PaletteHotkey
         {
+            get => _paletteHotkey;
+            set
+            {
+                if (SetProperty(ref _paletteHotkey, value) && !_isLoading)
+                {
+                    ConfigHelper.setConfig("PaletteHotkey", value);
+                    RegisterAll();
+                }
+            }
+        }
+
+        public HotkeyViewModel(SearchViewModel searchViewModel)
+        {
+            _searchViewModel = searchViewModel;
             Load();
         }
 
@@ -54,10 +74,15 @@ namespace ModernBoxes.Presentation.ViewModels
             if (!string.IsNullOrEmpty(quickNote))
                 _quickNoteHotkey = quickNote;
 
+            var palette = ConfigHelper.getConfig("PaletteHotkey");
+            if (!string.IsNullOrEmpty(palette))
+                _paletteHotkey = palette;
+
             _isLoading = false;
 
             OnPropertyChanged(nameof(ShowHideHotkey));
             OnPropertyChanged(nameof(QuickNoteHotkey));
+            OnPropertyChanged(nameof(PaletteHotkey));
         }
 
         public void RegisterAll()
@@ -99,6 +124,23 @@ namespace ModernBoxes.Presentation.ViewModels
                     });
                 });
             }
+
+            if (HotkeyManager.TryParseHotkeyString(PaletteHotkey, out var paletteMod, out var paletteKey))
+            {
+                hk.RegisterHotkeyAction(paletteMod, paletteKey, () =>
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(ToggleQuickLaunch);
+                });
+            }
+        }
+
+        private void ToggleQuickLaunch()
+        {
+            _quickLaunchWindow ??= new QuickLaunchWindow(_searchViewModel);
+            if (_quickLaunchWindow.IsVisible)
+                _quickLaunchWindow.Hide();
+            else
+                _quickLaunchWindow.ShowAndFocus();
         }
     }
 }

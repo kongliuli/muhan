@@ -1,10 +1,14 @@
-using System.Threading.Tasks;
+using System;
 
 namespace ModernBoxes.Core.Interfaces
 {
     public interface ICardViewModel : ICard
     {
-        Task LoadAsync();
-        Task RefreshAsync();
+        const int HostApiVersion = 1;
+
+        int CardApiVersion => 1;
+
+        System.Threading.Tasks.Task LoadAsync();
+        System.Threading.Tasks.Task RefreshAsync();
     }
 }

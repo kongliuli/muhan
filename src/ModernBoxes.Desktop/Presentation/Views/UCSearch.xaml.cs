@@ -1,39 +1,27 @@
 using ModernBoxes.Core.Models;
 using ModernBoxes.Infrastructure;
 using ModernBoxes.Presentation.ViewModels;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 
 namespace ModernBoxes.Presentation.Views
 {
     public partial class UCSearch : UserControl
     {
-        private readonly SearchViewModel _viewModel;
+        private SearchViewModel? _viewModel;
 
         public UCSearch()
         {
             InitializeComponent();
-            _viewModel = (SearchViewModel)DataContext;
-            SearchTextBox.GotFocus += SearchTextBox_GotFocus;
-            SearchTextBox.LostFocus += SearchTextBox_LostFocus;
-        }
-
-        private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            var storyboard = (Storyboard)FindResource("SearchFocusIn");
-            storyboard.Begin(SearchBorder);
-        }
-
-        private void SearchTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var storyboard = (Storyboard)FindResource("SearchFocusOut");
-            storyboard.Begin(SearchBorder);
+            Loaded += (_, _) => _viewModel = DataContext as SearchViewModel;
+            DataContextChanged += (_, _) => _viewModel = DataContext as SearchViewModel;
         }
 
         private void SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (_viewModel == null)
+                return;
+
             if (e.Key == Key.Enter)
             {
                 _viewModel.SelectFirstResult();
@@ -48,6 +36,9 @@ namespace ModernBoxes.Presentation.Views
 
         private void ResultsListBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (_viewModel == null)
+                return;
+
             if (e.Key == Key.Enter)
             {
                 if (ResultsListBox.SelectedItem is SearchResultModel result)
@@ -58,6 +49,9 @@ namespace ModernBoxes.Presentation.Views
 
         private void ResultsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (_viewModel == null)
+                return;
+
             if (ResultsListBox.SelectedItem is SearchResultModel result)
                 _viewModel.ExecuteResult(result);
         }

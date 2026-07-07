@@ -17,14 +17,10 @@ namespace ModernBoxes.Infrastructure
         {
             _notifier = notifier;
         }
-        /// <summary>
-        /// �Զ����ݷ�ʽ����
-        /// </summary>
+        /// <summary>自动创建桌面快捷方式</summary>
         private const string quickName = "ModernBoxes";
 
-        /// <summary>
-        /// �Զ���ȡϵͳ�Զ�����Ŀ¼
-        /// </summary>
+        /// <summary>自动读取系统自启动目录</summary>
         private string systemStartPath
         {
             get

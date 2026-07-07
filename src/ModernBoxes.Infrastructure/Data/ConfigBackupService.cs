@@ -13,7 +13,7 @@ namespace ModernBoxes.Infrastructure.Data
             "TempFileConfig.json",
             "UsedApplicationConfig.json",
             "NotesConfig.json",
-            "App.config"
+            "settings.json"
         };
 
         private static string AppDir => AppPaths.Root;

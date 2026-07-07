@@ -5,28 +5,28 @@ namespace ModernBoxes.Core.Models
 {
     public class ApplicationModel : ObservableObject
     {
-        private String fileName;
+        private string fileName = string.Empty;
 
-        public String FileName
+        public string FileName
         {
-            get { return fileName; }
-            set { fileName = value; OnPropertyChanged("FileName"); }
+            get => fileName;
+            set { fileName = value; OnPropertyChanged(nameof(FileName)); }
         }
 
-        private String appPath;
+        private string appPath = string.Empty;
 
-        public String AppPath
+        public string AppPath
         {
-            get { return appPath; }
-            set { appPath = value; OnPropertyChanged("AppPath"); }
+            get => appPath;
+            set { appPath = value; OnPropertyChanged(nameof(AppPath)); }
         }
 
-        private String icon;
+        private string icon = string.Empty;
 
-        public String Icon
+        public string Icon
         {
-            get { return icon; }
-            set { icon = value; OnPropertyChanged("Icon"); }
+            get => icon;
+            set { icon = value; OnPropertyChanged(nameof(Icon)); }
         }
     }
 }

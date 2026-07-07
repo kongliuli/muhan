@@ -119,7 +119,7 @@ public partial class UCSetDialogViewModel : ObservableObject
 
     public bool IsRecordingShowHide { get; set; }
     public bool IsRecordingQuickNote { get; set; }
-    public string AboutVersion => "v3.0.0";
+    public string AboutVersion => AppVersion.Display;
     public string AboutAuthor => "ModernBoxes Team";
 
     public bool IsThemeLight { get => _theme == Theme.light; set { if (value) Theme = Theme.light; } }

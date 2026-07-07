@@ -16,7 +16,7 @@ namespace ModernBoxes.Presentation.Views
     public partial class BaseDialog : Window
     {
 
-        public static event SetDialogOpacityHandler SetDialogOpacityHandlerEvent;
+        public static event SetDialogOpacityHandler? SetDialogOpacityHandlerEvent;
 
         public BaseDialog()
         {

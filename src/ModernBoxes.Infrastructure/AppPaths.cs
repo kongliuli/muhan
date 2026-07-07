@@ -4,13 +4,19 @@ using System.IO;
 namespace ModernBoxes.Infrastructure
 {
     /// <summary>
-    /// 统一应用数据根目录，避免 CurrentDirectory 与 BaseDirectory 混用。
+    /// 统一应用路径：用户数据在 %APPDATA%，插件与程序资源在安装目录。
     /// </summary>
     public static class AppPaths
     {
-        public static string Root => AppContext.BaseDirectory;
+        public static string InstallDir => AppContext.BaseDirectory;
+
+        public static string Root => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "ModernBoxes");
 
         public static string Config(string fileName) => Path.Combine(Root, fileName);
+
+        public static string Settings => Path.Combine(Root, "settings.json");
 
         public static string Icons => Path.Combine(Root, "icons");
 
@@ -18,8 +24,10 @@ namespace ModernBoxes.Infrastructure
 
         public static string FileCache => Path.Combine(Root, "FileCache");
 
-        public static string Plugins => Path.Combine(Root, "Plugins");
+        public static string Plugins => Path.Combine(InstallDir, "Plugins");
 
-        public static string Executable => Path.Combine(Root, "ModernBoxes.exe");
+        public static string Executable => Path.Combine(InstallDir, "ModernBoxes.exe");
+
+        public static string LegacyDataDir => InstallDir;
     }
 }

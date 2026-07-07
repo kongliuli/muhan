@@ -1,22 +1,29 @@
+using ModernBoxes.Core.Interfaces;
 using System;
 using System.Net.Http;
-using System.Text.Json;
-using System.Windows;
 using System.Reflection;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ModernBoxes.Infrastructure
 {
     public class UpdateChecker
     {
-        private const string GitHubApiUrl = "https://api.github.com/repos/ModernBoxes/ModernBoxes/releases/latest";
+        private const string GitHubApiUrl = "https://api.github.com/repos/kongliuli/muhan/releases/latest";
         private static readonly HttpClient _httpClient = new();
+        private readonly IUserNotifier _notifier;
+
+        public UpdateChecker(IUserNotifier notifier)
+        {
+            _notifier = notifier;
+        }
 
         static UpdateChecker()
         {
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("ModernBoxes-UpdateChecker");
         }
 
-        public async System.Threading.Tasks.Task<bool> CheckForUpdatesAsync()
+        public async Task<bool> CheckForUpdatesAsync()
         {
             try
             {
@@ -30,23 +37,17 @@ namespace ModernBoxes.Infrastructure
                     var htmlUrl = doc.RootElement.GetProperty("html_url").GetString();
                     var body = doc.RootElement.GetProperty("body").GetString();
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        var result = MessageBox.Show(
-                            $"发现新版本: {tagName}\n\n{body}\n\n是否前往下载更新？",
-                            "ModernBoxes - 发现新版本",
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Information);
-
-                        if (result == MessageBoxResult.Yes && htmlUrl != null)
-                            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(htmlUrl) { UseShellExecute = true });
-                    });
+                    var go = _notifier.ShowConfirm(
+                        "ModernBoxes - 发现新版本",
+                        $"发现新版本: {tagName}\n\n{body}\n\n是否前往下载更新？");
+                    if (go && htmlUrl != null)
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(htmlUrl) { UseShellExecute = true });
                     return true;
                 }
             }
             catch
             {
-                // Silent fail �?don't bother user if update check fails
+                // Silent fail — don't bother user if update check fails
             }
             return false;
         }

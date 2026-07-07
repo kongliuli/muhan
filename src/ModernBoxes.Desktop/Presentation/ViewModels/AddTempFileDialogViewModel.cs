@@ -65,7 +65,7 @@ namespace ModernBoxes.Presentation.ViewModels
                     if (FileKind[3])
                         TempFile.FileKind = DirEnum.dirSecondary;
 
-                    var fileCache = Path.Combine(AppContext.BaseDirectory, "FileCache");
+                    var fileCache = AppPaths.FileCache;
                     if (TB_DirRef?.Visibility == System.Windows.Visibility.Collapsed)
                     {
                         // 新建文件模式：在缓存目录下创建空文件

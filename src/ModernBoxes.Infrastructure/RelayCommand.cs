@@ -6,7 +6,7 @@ namespace ModernBoxes.Infrastructure
     public class RelayCommand : ICommand
     {
         private readonly Action<object?> m_execute;
-        private readonly Predicate<object?> m_canExectue;
+        private readonly Predicate<object?>? m_canExectue;
 
         public RelayCommand(Action<object?> m_execute)
         {
