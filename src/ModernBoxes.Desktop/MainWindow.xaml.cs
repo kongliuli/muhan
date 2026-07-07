@@ -104,6 +104,8 @@ namespace ModernBoxes
             {
                 componentLayoutLeft.Visibility = (componentLayoutLeft.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
             }
+
+            InvalidateMeasure();
         }
 
         /// <summary>

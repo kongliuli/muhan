@@ -10,11 +10,10 @@
     x:Name="window"
     Title="MainWindow"
     DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
-    Width="1400"
-    Height="1000"
-    AllowsTransparency="False"
+    AllowsTransparency="True"
     Background="Transparent"
     ResizeMode="NoResize"
+    SizeToContent="Width"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -26,8 +25,8 @@
         </ResourceDictionary>
     </Window.Resources>
     <hc:TransitioningContentControl>
-        <Border Background="{DynamicResource MaterialBackground}">
-            <Grid>
+        <Border Background="{DynamicResource MaterialBackground}" SnapsToDevicePixels="True">
+            <Grid HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="auto" />

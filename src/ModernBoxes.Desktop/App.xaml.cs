@@ -54,7 +54,6 @@ namespace ModernBoxes
                     services.AddTransient<AddTempFileDialogViewModel>();
                     services.AddTransient<UcAddCardAppDialogViewModel>();
                     services.AddTransient<AddNoteDialogViewModel>();
-                    services.AddTransient<FilePropertyDialogViewModel>();
                     services.AddSingleton<IUserNotifier, WpfUserNotifier>();
                     services.AddSingleton<AutoOpenSoftware>(sp =>
                         new AutoOpenSoftware(sp.GetRequiredService<IUserNotifier>()));

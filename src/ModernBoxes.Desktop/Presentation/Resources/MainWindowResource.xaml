@@ -92,6 +92,7 @@
                                 VerticalAlignment="Center"
                                 Source="{Binding Icon, Converter={StaticResource menuConvert}}" />
                             <TextBlock
+                                x:Name="label"
                                 Grid.Column="1"
                                 Margin="10,0,10,0"
                                 VerticalAlignment="Center"
@@ -110,7 +111,8 @@
                                             To="#33216cfd"
                                             Duration="0:0:0.2" />
                                         <ColorAnimation
-                                            Storyboard.TargetProperty="(Control.Foreground).(SolidColorBrush.Color)"
+                                            Storyboard.TargetName="label"
+                                            Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
                                             To="#085bfd"
                                             Duration="0:0:0.2" />
                                     </Storyboard>
@@ -125,7 +127,8 @@
                                             To="#00000000"
                                             Duration="0:0:0.2" />
                                         <ColorAnimation
-                                            Storyboard.TargetProperty="(Control.Foreground).(SolidColorBrush.Color)"
+                                            Storyboard.TargetName="label"
+                                            Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
                                             To="#DDDDDD"
                                             Duration="0:0:0.2" />
                                     </Storyboard>
