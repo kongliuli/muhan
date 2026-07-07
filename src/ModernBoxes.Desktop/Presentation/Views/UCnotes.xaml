@@ -26,32 +26,6 @@
                     Margin="20"
                     Source="/Resource/svg/empty2.svg"
                     Visibility="{Binding IsShowBgEmpty}">
-                    <svg:SvgViewbox.RenderTransform>
-                        <TranslateTransform X="0" Y="0" />
-                    </svg:SvgViewbox.RenderTransform>
-                    <svg:SvgViewbox.Style>
-                        <Style TargetType="svg:SvgViewbox">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsShowBgEmpty}" Value="Visible">
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                                                <DoubleAnimation
-                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                                                    From="0"
-                                                    To="-6"
-                                                    Duration="0:0:2">
-                                                    <DoubleAnimation.EasingFunction>
-                                                        <CubicEase EasingMode="EaseInOut" />
-                                                    </DoubleAnimation.EasingFunction>
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </svg:SvgViewbox.Style>
                 </svg:SvgViewbox>
                 <hc:ScrollViewer>
                     <ItemsControl ItemsSource="{Binding Notes}">

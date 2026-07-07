@@ -102,38 +102,8 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ColorAnimation
-                                            Storyboard.TargetName="border"
-                                            Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
-                                            To="#33216cfd"
-                                            Duration="0:0:0.2" />
-                                        <ColorAnimation
-                                            Storyboard.TargetName="label"
-                                            Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
-                                            To="#085bfd"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ColorAnimation
-                                            Storyboard.TargetName="border"
-                                            Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
-                                            To="#00000000"
-                                            Duration="0:0:0.2" />
-                                        <ColorAnimation
-                                            Storyboard.TargetName="label"
-                                            Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
-                                            To="#DDDDDD"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
+                            <Setter TargetName="border" Property="Background" Value="#33216cfd" />
+                            <Setter TargetName="label" Property="Foreground" Value="#085bfd" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="line" Property="Background" Value="#2365fe" />
