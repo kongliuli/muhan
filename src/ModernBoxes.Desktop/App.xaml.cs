@@ -87,6 +87,7 @@ namespace ModernBoxes
                     services.AddHostedService(sp => sp.GetRequiredService<FirstRunSetupService>());
                     services.AddHostedService<TrayHostedService>();
                     services.AddHostedService<HotkeyHostedService>();
+                    services.AddHostedService<EdgeHoverHostedService>();
                     services.AddHostedService<DeeplinkHostedService>();
                     services.AddHostedService<AutoUpdateService>();
                     services.AddHostedService<StartMenuScannerService>();

@@ -23,9 +23,12 @@ namespace ModernBoxes.Infrastructure.Plugins
         private readonly SearchPluginReloadService _reload;
         private List<FlowStoreEntry>? _cachedStore;
 
+        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(120);
+        private const int DownloadMaxAttempts = 3;
+
         public PluginCatalogService(SearchPluginReloadService reload)
         {
-            _http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+            _http = new HttpClient { Timeout = DownloadTimeout };
             _reload = reload;
         }
 
@@ -105,7 +108,7 @@ namespace ModernBoxes.Infrastructure.Plugins
 
             try
             {
-                var bytes = await _http.GetByteArrayAsync(entry.UrlDownload, cancellationToken).ConfigureAwait(false);
+                var bytes = await DownloadBytesWithRetryAsync(entry.UrlDownload, cancellationToken).ConfigureAwait(false);
                 await File.WriteAllBytesAsync(zipPath, bytes, cancellationToken).ConfigureAwait(false);
 
                 var extractDir = Path.Combine(tempRoot, "extract");
@@ -141,6 +144,26 @@ namespace ModernBoxes.Infrastructure.Plugins
                     // ponytail: 临时目录清理失败可忽略
                 }
             }
+        }
+
+        private async Task<byte[]> DownloadBytesWithRetryAsync(string url, CancellationToken cancellationToken)
+        {
+            Exception? last = null;
+            for (var attempt = 1; attempt <= DownloadMaxAttempts; attempt++)
+            {
+                try
+                {
+                    return await _http.GetByteArrayAsync(url, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (attempt < DownloadMaxAttempts)
+                {
+                    last = ex;
+                    Logger.Warn($"Plugin download attempt {attempt} failed: {url}. {ex.Message}");
+                    await Task.Delay(TimeSpan.FromSeconds(2 * attempt), cancellationToken).ConfigureAwait(false);
+                }
+            }
+
+            throw last ?? new InvalidOperationException("插件下载失败");
         }
 
         public bool TryImportDirectory(string sourceDirectory, bool overwrite) =>

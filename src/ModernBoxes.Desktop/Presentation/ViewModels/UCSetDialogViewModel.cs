@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using ModernBoxes.Core.Enums;
+using ModernBoxes.Desktop.HostedServices;
 using ModernBoxes.Infrastructure;
 using System;
 
@@ -199,6 +200,8 @@ public partial class UCSetDialogViewModel : ObservableObject
 
     public void Save()
     {
+        // 悬停侧与卡片布局侧一致，左右只生效一边
+        HoverPosition = CommentLayoutDirection == CommentLayout.left ? HoverPosition.LEFT : HoverPosition.RIGHT;
         ConfigHelper.setConfig("theme", Theme);
         ConfigHelper.setConfig("WindowOpacity", WindowOpacity);
         ConfigHelper.setConfig("IsHover", IsHover);
@@ -206,5 +209,6 @@ public partial class UCSetDialogViewModel : ObservableObject
         ConfigHelper.setConfig("ComponentWidth", ComponentWidth);
         ConfigHelper.setConfig("autoOpen", AutoStart);
         ConfigHelper.SetComponentLayout(CommentLayoutDirection);
+        WeakReferenceMessenger.Default.Send(new HoverConfigChangedMessage());
     }
 }

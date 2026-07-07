@@ -2,6 +2,19 @@
 
 基于木函（ModernBoxes）二次开发的卡片插件，三步即可运行。
 
+## 插件类型：搜索 vs 卡片（小组件）
+
+| 类型 | `plugin.json` 的 `type` | 加载器 | 出现位置 |
+|------|-------------------------|--------|----------|
+| **卡片小组件** | `card`（默认，可省略） | `CardPluginLoader` | 悬停面板 / 「组件应用」 |
+| **搜索插件** | `wox` | `WoxPluginLoader` | `Alt+Space` 快速搜索 |
+| **脚本插件** | `jsonrpc` | JSON-RPC 宿主 | 搜索 |
+
+**Flow 社区商店**安装的是 Flow/Wox **搜索插件**（`type: wox`），不会自动变成卡片小组件。  
+卡片插件需单独开发：DLL 内实现 `ICardViewModel` 并标注 `[CardExport]`，放入 `Plugins/{id}/`，`plugin.json` 不要写 `type: wox`。
+
+同一 DLL 可同时导出 `[CardExport]` 与 `ISearchPlugin`（后续版本），目前请分开部署。
+
 ## 1. 创建类库
 
 - 目标框架：`net10.0-windows`，启用 WPF
@@ -56,11 +69,11 @@ copy examples\SampleClockCard\plugin.json src\ModernBoxes.Desktop\bin\Debug\net1
 
 ### 本机 Flow/Wox 导入（设置 → 插件）
 
-自动扫描 `%AppData%\\FlowLauncher\\Plugins` 等目录，将 **C# 插件** 复制到木函 `Plugins/<id>/` 并生成木函格式 `plugin.json`（`type: wox`）。**重启后生效**。
+自动扫描 `%AppData%\\FlowLauncher\\Plugins` 等目录，将 **C# 插件** 复制到木函 `Plugins/<id>/` 并生成木函格式 `plugin.json`（`type: wox`）。安装后热重载，在 `Alt+Space` 搜索中使用。
 
 ### Flow 社区商店
 
-设置 → 插件 → **加载 Flow 商店** 拉取 [Flow.Launcher.PluginsManifest](https://github.com/Flow-Launcher/Flow.Launcher.PluginsManifest) 清单（jsDelivr CDN），仅展示 **C# 插件**；选中后下载 Release zip 并安装到本地 `Plugins/`，仍走木函 ALC + Wox 适配器。
+设置 → 插件 → **加载 Flow 商店** → **双击**列表项安装（非搜索插件，是 **搜索插件**）。下载较慢时会自动重试（最多 3 次，单次超时 120 秒）。
 
 在 `plugin.json` 中设置 `"type": "wox"`，主程序集需实现 Wox 风格 `Init` + `Query`（或 `Wox.Plugin.IPlugin`）：
 

@@ -256,7 +256,7 @@
                         Margin="0,4,0,0"
                         FontSize="11"
                         Foreground="Gray"
-                        Text="提示：双击列表项 = 自动下载、安装并启用（无需重启）" />
+                        Text="提示：Flow 商店 = 搜索插件（Alt+Space）；卡片小组件见 docs/active/plugin-development.md" />
                 </StackPanel>
             </Expander>
             <Expander Margin="10" Header="数据恢复">

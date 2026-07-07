@@ -23,7 +23,7 @@ public partial class PluginManagerViewModel : ObservableObject
         set => SetProperty(ref _selectedStorePlugin, value);
     }
 
-    private string _statusMessage = "可从本机 Flow/Wox 导入，或双击商店列表项自动安装并启用。";
+    private string _statusMessage = "Flow 商店提供搜索插件（Alt+Space）；卡片插件需单独安装带 [CardExport] 的 DLL。";
     public string StatusMessage
     {
         get => _statusMessage;
@@ -103,7 +103,7 @@ public partial class PluginManagerViewModel : ObservableObject
             foreach (var item in items.Take(200))
                 StorePlugins.Add(item);
             StatusMessage = StorePlugins.Count > 0
-                ? $"已加载 {StorePlugins.Count} 个 C# 插件；双击即可自动安装并启用。"
+                ? $"已加载 {StorePlugins.Count} 个搜索插件；双击安装后在 Alt+Space 使用（非卡片小组件）。"
                 : "无法加载 Flow 插件商店，请检查网络。";
         }
         finally

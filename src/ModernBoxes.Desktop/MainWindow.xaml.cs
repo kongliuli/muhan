@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace ModernBoxes
 {
@@ -24,6 +25,9 @@ namespace ModernBoxes
         /// 卡片面板布局方向
         /// </summary>
         private CommentLayout commentLayout = CommentLayout.right;
+
+        private bool _hoverExpandedCards;
+        private bool _hoverShowedMainWindow;
 
         public MainWindow()
         {
@@ -64,6 +68,82 @@ namespace ModernBoxes
             // 恢复窗口透明度
             if (Double.TryParse(ConfigHelper.getConfig("WindowOpacity"), out var opacity))
                 this.Opacity = opacity;
+
+            MouseMove += (_, _) =>
+            {
+                if (_hoverExpandedCards)
+                    ScheduleHoverLeaveCheck();
+            };
+        }
+
+        internal void EnsureVisibleForHover()
+        {
+            if (Visibility == Visibility.Visible)
+                return;
+
+            _hoverShowedMainWindow = true;
+            Show();
+            Activate();
+            WindowState = WindowState.Normal;
+        }
+
+        internal void ExpandCardPanelFromHover()
+        {
+            var panel = GetActiveCardPanel();
+            if (panel.Visibility == Visibility.Visible)
+                return;
+
+            panel.Visibility = Visibility.Visible;
+            _hoverExpandedCards = true;
+            InvalidateMeasure();
+        }
+
+        internal void CollapseCardPanelFromHover()
+        {
+            if (!_hoverExpandedCards)
+                return;
+
+            GetActiveCardPanel().Visibility = Visibility.Collapsed;
+            _hoverExpandedCards = false;
+            InvalidateMeasure();
+
+            if (_hoverShowedMainWindow)
+            {
+                Hide();
+                _hoverShowedMainWindow = false;
+            }
+        }
+
+        internal bool IsMouseOverWindow()
+        {
+            var pos = System.Windows.Forms.Control.MousePosition;
+            var point = new Point(pos.X, pos.Y);
+            var rect = new Rect(Left, Top, ActualWidth, ActualHeight);
+            return rect.Contains(point);
+        }
+
+        private FrameworkElement GetActiveCardPanel() =>
+            commentLayout == CommentLayout.right ? componentLayoutRight : componentLayoutLeft;
+
+        private DispatcherTimer? _hoverLeaveTimer;
+
+        private void ScheduleHoverLeaveCheck()
+        {
+            _hoverLeaveTimer ??= new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+            _hoverLeaveTimer.Stop();
+            _hoverLeaveTimer.Tick -= HoverLeaveTimer_Tick;
+            _hoverLeaveTimer.Tick += HoverLeaveTimer_Tick;
+            _hoverLeaveTimer.Start();
+        }
+
+        private void HoverLeaveTimer_Tick(object? sender, EventArgs e)
+        {
+            _hoverLeaveTimer?.Stop();
+            if (!_hoverExpandedCards)
+                return;
+            if (IsMouseOverWindow())
+                return;
+            CollapseCardPanelFromHover();
         }
 
         private void SetComponentWidth(double value)
@@ -105,6 +185,8 @@ namespace ModernBoxes
                 componentLayoutLeft.Visibility = (componentLayoutLeft.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible);
             }
 
+            _hoverExpandedCards = false;
+            _hoverShowedMainWindow = false;
             InvalidateMeasure();
         }
 
