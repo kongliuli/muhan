@@ -28,6 +28,19 @@
                 TextWrapping="Wrap"
                 VerticalScrollBarVisibility="Auto" />
             <StackPanel Margin="10" Orientation="Horizontal">
+                <Button
+                    Margin="0,0,8,0"
+                    Command="{Binding PolishNoteCommand}"
+                    Content="AI 润色"
+                    IsEnabled="{Binding IsAiAvailable}"
+                    Style="{StaticResource ButtonDefault}" />
+                <Button
+                    Command="{Binding SummarizeNoteCommand}"
+                    Content="AI 总结"
+                    IsEnabled="{Binding IsAiAvailable}"
+                    Style="{StaticResource ButtonDefault}" />
+            </StackPanel>
+            <StackPanel Margin="10" Orientation="Horizontal">
                 <TextBlock
                     Margin="0,0,10,0"
                     VerticalAlignment="Center"

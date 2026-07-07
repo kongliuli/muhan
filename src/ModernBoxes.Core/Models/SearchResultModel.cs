@@ -8,6 +8,9 @@ namespace ModernBoxes.Core.Models
         public string Name { get; set; } = "";
         public string Detail { get; set; } = "";
         public string IconText { get; set; } = "";
+        public string IconPath { get; set; } = "";
         public object? ActionTarget { get; set; }
+        public Func<bool>? ExecuteAction { get; set; }
+        public int Score { get; set; }
     }
 }

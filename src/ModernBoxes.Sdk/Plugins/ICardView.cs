@@ -1,4 +1,4 @@
-namespace ModernBoxes.Core.Interfaces
+namespace ModernBoxes.Sdk.Plugins
 {
     public interface ICardView
     {

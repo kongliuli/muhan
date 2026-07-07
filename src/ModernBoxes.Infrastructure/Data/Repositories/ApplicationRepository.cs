@@ -45,6 +45,27 @@ namespace ModernBoxes.Infrastructure.Data.Repositories
             tx.Commit();
         }
 
+        public List<ApplicationModel> GetAllApplications()
+        {
+            var list = new List<ApplicationModel>();
+            using var conn = _db.GetConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT FileName, AppPath, Icon FROM Applications";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new ApplicationModel
+                {
+                    FileName = reader.GetString(0),
+                    AppPath = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                    Icon = reader.IsDBNull(2) ? null : reader.GetString(2),
+                });
+            }
+
+            return list;
+        }
+
         public List<SearchResultModel> SearchApplications(string query)
         {
             var results = new List<SearchResultModel>();
@@ -58,13 +79,15 @@ namespace ModernBoxes.Infrastructure.Data.Repositories
             while (reader.Read())
             {
                 var appPath = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                var iconPath = reader.IsDBNull(2) ? "" : reader.GetString(2);
                 results.Add(new SearchResultModel
                 {
                     Type = ResultType.Application,
                     Name = reader.GetString(0),
                     Detail = appPath,
-                    IconText = "\ud83d\udccb",
-                    ActionTarget = new ApplicationModel { FileName = reader.GetString(0), AppPath = appPath, Icon = reader.IsDBNull(2) ? "" : reader.GetString(2) }
+                    IconText = "\ud83d\udcbb",
+                    IconPath = iconPath,
+                    ActionTarget = new ApplicationModel { FileName = reader.GetString(0), AppPath = appPath, Icon = iconPath }
                 });
             }
             return results;

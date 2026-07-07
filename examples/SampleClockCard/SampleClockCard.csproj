@@ -11,4 +11,10 @@
     <ProjectReference Include="..\..\src\ModernBoxes.Core\ModernBoxes.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="plugin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

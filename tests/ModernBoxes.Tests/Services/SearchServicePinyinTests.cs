@@ -9,7 +9,7 @@ using Xunit;
 namespace ModernBoxes.Tests.Services;
 
 [Trait("Category", "Service")]
-public class SearchServicePinyinTests
+public class SearchServicePinyinTests : IClassFixture<DatabaseFixture>
 {
     [Fact]
     public async Task SearchAsync_ShouldExpandWithPinyin_WhenSqlReturnsEmpty()
@@ -32,12 +32,7 @@ public class SearchServicePinyinTests
                 new() { Name = "微信", Type = ResultType.Application, Detail = "C:\\WeChat.exe" }
             });
 
-        var sut = new SearchService(
-            menuRepo.Object,
-            appRepo.Object,
-            dirRepo.Object,
-            fileRepo.Object,
-            noteRepo.Object);
+        var sut = SearchServiceTestFactory.Create(menuRepo, appRepo, dirRepo, fileRepo, noteRepo);
 
         var results = await sut.SearchAsync("wx");
 

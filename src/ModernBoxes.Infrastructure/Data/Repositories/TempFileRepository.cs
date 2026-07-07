@@ -41,14 +41,55 @@ namespace ModernBoxes.Infrastructure.Data.Repositories
             }
 
             tx.Commit();
+            FtsSearchIndex.RebuildTempFiles(conn);
         }
 
         public List<SearchResultModel> SearchTempFiles(string query)
         {
-            var results = new List<SearchResultModel>();
-            var searchParam = $"%{query}%";
             using var conn = _db.GetConnection();
             conn.Open();
+            if (FtsSearchIndex.HasTempFilesIndex(conn))
+            {
+                try
+                {
+                    return SearchTempFilesFts(conn, query);
+                }
+                catch (SqliteException)
+                {
+                    // ponytail: FTS 语法异常时回退 LIKE
+                }
+            }
+            return SearchTempFilesLike(conn, query);
+        }
+
+        private static List<SearchResultModel> SearchTempFilesFts(SqliteConnection conn, string query)
+        {
+            var results = new List<SearchResultModel>();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT file_path, file_name FROM TempFilesFts
+                WHERE TempFilesFts MATCH @search";
+            cmd.Parameters.AddWithValue("@search", FtsSearchIndex.QuoteFtsLiteral(query));
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var filePath = reader.GetString(0);
+                results.Add(new SearchResultModel
+                {
+                    Type = ResultType.File,
+                    Name = reader.IsDBNull(1) ? Path.GetFileName(filePath) ?? filePath : reader.GetString(1),
+                    Detail = filePath,
+                    IconText = "\ud83d\udcc4",
+                    ActionTarget = new TempFileModel { FilePath = filePath }
+                });
+            }
+            return results;
+        }
+
+        private static List<SearchResultModel> SearchTempFilesLike(SqliteConnection conn, string query)
+        {
+            var results = new List<SearchResultModel>();
+            var searchParam = $"%{query}%";
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT FilePath FROM TempFiles WHERE FilePath LIKE @search";
             cmd.Parameters.AddWithValue("@search", searchParam);

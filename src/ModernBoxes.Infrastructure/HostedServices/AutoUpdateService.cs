@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Hosting;
-using ModernBoxes.Core.Interfaces;
+using ModernBoxes.Infrastructure.Update;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,11 +7,11 @@ namespace ModernBoxes.Infrastructure.HostedServices
 {
     public class AutoUpdateService : IHostedService
     {
-        private readonly IUserNotifier _notifier;
+        private readonly VelopackUpdateService _updates;
 
-        public AutoUpdateService(IUserNotifier notifier)
+        public AutoUpdateService(VelopackUpdateService updates)
         {
-            _notifier = notifier;
+            _updates = updates;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -21,8 +21,7 @@ namespace ModernBoxes.Infrastructure.HostedServices
                 await Task.Delay(3000, cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                var checker = new UpdateChecker(_notifier);
-                await checker.CheckForUpdatesAsync();
+                await _updates.CheckAndDownloadAsync(cancellationToken);
             }, cancellationToken);
             return Task.CompletedTask;
         }

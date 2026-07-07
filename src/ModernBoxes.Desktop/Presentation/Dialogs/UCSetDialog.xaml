@@ -221,6 +221,46 @@
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Expander>
+            <Expander Margin="10" Header="插件">
+                <StackPanel Margin="10" DataContext="{Binding PluginManagerViewModel, Source={StaticResource Locator}}" Orientation="Vertical">
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        Foreground="Gray"
+                        Text="{Binding StatusMessage}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        FontSize="11"
+                        Foreground="Gray"
+                        Text="{Binding LocalFlowPaths}"
+                        TextWrapping="Wrap" />
+                    <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
+                        <Button
+                            Width="160"
+                            Command="{Binding ImportFlowCommand}"
+                            Content="导入本机 Flow/Wox" />
+                        <Button
+                            Width="140"
+                            Margin="12,0,0,0"
+                            Command="{Binding RefreshStoreCommand}"
+                            Content="加载 Flow 商店" />
+                    </StackPanel>
+                    <ListBox
+                        Height="160"
+                        DisplayMemberPath="Name"
+                        ItemsSource="{Binding StorePlugins}"
+                        SelectedItem="{Binding SelectedStorePlugin, Mode=TwoWay}">
+                        <ListBox.InputBindings>
+                            <MouseBinding Command="{Binding InstallSelectedCommand}" Gesture="LeftDoubleClick" />
+                        </ListBox.InputBindings>
+                    </ListBox>
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="11"
+                        Foreground="Gray"
+                        Text="提示：双击列表项 = 自动下载、安装并启用（无需重启）" />
+                </StackPanel>
+            </Expander>
             <Expander Margin="10" Header="数据恢复">
                 <StackPanel Margin="10" Orientation="Vertical">
                     <StackPanel Margin="10" Orientation="Horizontal">

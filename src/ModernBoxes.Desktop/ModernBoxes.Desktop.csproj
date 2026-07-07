@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject>ModernBoxes.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -230,6 +231,7 @@
     <PackageReference Include="SharpVectors" Version="1.7.6" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

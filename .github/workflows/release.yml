@@ -19,12 +19,15 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Install vpk
+        run: dotnet tool install -g vpk --version 0.0.1298
+
       - name: Build and test
         run: |
           dotnet build Sinx.sln -c Release -warnaserror
           dotnet test tests/ModernBoxes.Tests/ModernBoxes.Tests.csproj -c Release --no-build
 
-      - name: Publish zip
+      - name: Publish Velopack + zip + portable
         shell: pwsh
         run: |
           $version = "${{ github.ref_name }}".TrimStart('v')
@@ -35,4 +38,27 @@ jobs:
         with:
           files: |
             ModernBoxes-*.zip
+            releases/**/*
           generate_release_notes: true
+
+  winget:
+    runs-on: windows-latest
+    needs: release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Submit winget manifest
+        shell: pwsh
+        env:
+          WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+        run: |
+          if (-not $env:WINGET_TOKEN) {
+            Write-Host "WINGET_TOKEN not set; skip winget submission"
+            exit 0
+          }
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          dotnet tool install -g wingetcreate
+          wingetcreate update kongliuli.ModernBoxes `
+            --version $version `
+            --url "https://github.com/kongliuli/muhan/releases/download/${{ github.ref_name }}/ModernBoxes-win-Setup.exe" `
+            --token $env:WINGET_TOKEN

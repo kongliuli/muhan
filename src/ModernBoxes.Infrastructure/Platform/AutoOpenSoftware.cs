@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using ModernBoxes.Core.Interfaces;
+using ModernBoxes.Sdk.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

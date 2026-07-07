@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Threading.Tasks;
 
-namespace ModernBoxes.Core.Interfaces
+namespace ModernBoxes.Sdk.Plugins
 {
     public abstract class CardBase<TModel> : ObservableObject, ICardViewModel
     {
@@ -21,7 +21,7 @@ namespace ModernBoxes.Core.Interfaces
             set => SetProperty(ref _cardName, value);
         }
 
-        private object _cardContent = new();
+        private object _cardContent = new object();
         public virtual object CardContent
         {
             get => _cardContent;
@@ -53,6 +53,8 @@ namespace ModernBoxes.Core.Interfaces
         {
             Model = model;
         }
+
+        public int CardApiVersion => 1;
 
         public abstract Task LoadAsync();
         public abstract Task RefreshAsync();

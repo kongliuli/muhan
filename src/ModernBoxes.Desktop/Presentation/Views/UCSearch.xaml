@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="clr-namespace:ModernBoxes.Presentation.Views"
     d:DesignHeight="400"
     d:DesignWidth="240"
     DataContext="{Binding SearchViewModel, Source={StaticResource Locator}}"
@@ -115,61 +116,33 @@
                 MouseDoubleClick="ResultsListBox_MouseDoubleClick"
                 PreviewKeyDown="ResultsListBox_PreviewKeyDown"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                 Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border
-                            Padding="8,6"
-                            CornerRadius="4">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource RegionBrush}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+                        <Border Padding="8,6" CornerRadius="4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Border
-                                    Width="44"
-                                    Margin="0,0,8,0"
-                                    Padding="4,2"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    CornerRadius="3">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Type}" Value="Application">
-                                                    <Setter Property="Background" Value="#1976D2" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Type}" Value="File">
-                                                    <Setter Property="Background" Value="#F57C00" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Type}" Value="Directory">
-                                                    <Setter Property="Background" Value="#388E3C" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Type}" Value="Note">
-                                                    <Setter Property="Background" Value="#FBC02D" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Type}" Value="Menu">
-                                                    <Setter Property="Background" Value="#757575" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        FontSize="11"
-                                        Foreground="White"
-                                        Text="{Binding IconText}" />
-                                </Border>
+                                <views:AsyncResultIcon
+                                    IconPath="{Binding IconPath}"
+                                    IconText="{Binding IconText}"
+                                    FallbackPath="{Binding Detail}" />
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <TextBlock
                                         FontSize="13"

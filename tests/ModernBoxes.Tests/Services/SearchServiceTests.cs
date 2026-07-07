@@ -9,7 +9,7 @@ using Xunit;
 namespace ModernBoxes.Tests.Services;
 
 [Trait("Category", "Service")]
-public class SearchServiceTests
+public class SearchServiceTests : IClassFixture<DatabaseFixture>
 {
     private readonly Mock<IMenuRepository> _menuRepoMock;
     private readonly Mock<IApplicationRepository> _appRepoMock;
@@ -18,19 +18,19 @@ public class SearchServiceTests
     private readonly Mock<INoteRepository> _noteRepoMock;
     private readonly SearchService _sut;
 
-    public SearchServiceTests()
+    public SearchServiceTests(DatabaseFixture _)
     {
         _menuRepoMock = new Mock<IMenuRepository>();
         _appRepoMock = new Mock<IApplicationRepository>();
         _dirRepoMock = new Mock<ITempDirRepository>();
         _fileRepoMock = new Mock<ITempFileRepository>();
         _noteRepoMock = new Mock<INoteRepository>();
-        _sut = new SearchService(
-            _menuRepoMock.Object,
-            _appRepoMock.Object,
-            _dirRepoMock.Object,
-            _fileRepoMock.Object,
-            _noteRepoMock.Object);
+        _sut = SearchServiceTestFactory.Create(
+            _menuRepoMock,
+            _appRepoMock,
+            _dirRepoMock,
+            _fileRepoMock,
+            _noteRepoMock);
     }
 
     [Fact]
@@ -197,6 +197,8 @@ public class SearchServiceTests
                 return _currentTask;
             }
         }
+
+        public void RecordSelection(SearchResultModel result) => _inner.RecordSelection(result);
 
         private async Task<List<SearchResultModel>> DebouncedSearch(string query, CancellationToken ct)
         {

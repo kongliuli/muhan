@@ -25,5 +25,6 @@ public class ViewModelLocator
     public UcAddCardAppDialogViewModel UcAddCardAppDialogViewModel => App.AppHost!.Services.GetRequiredService<UcAddCardAppDialogViewModel>();
     public FilePropertyDialogViewModel FilePropertyDialogViewModel => App.AppHost!.Services.GetRequiredService<FilePropertyDialogViewModel>();
     public UcManagerCardAppViewModel UcManagerCardAppViewModel => App.AppHost!.Services.GetRequiredService<UcManagerCardAppViewModel>();
+    public PluginManagerViewModel PluginManagerViewModel => App.AppHost!.Services.GetRequiredService<PluginManagerViewModel>();
     public AddNoteDialogViewModel AddNoteDialogViewModel => App.AppHost!.Services.GetRequiredService<AddNoteDialogViewModel>();
 }

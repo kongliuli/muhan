@@ -1,0 +1,9 @@
+{
+  "id": "sample-clock",
+  "name": "示例时钟",
+  "version": "1.0.0",
+  "author": "muhan",
+  "description": "插件示例：显示当前时间",
+  "main": "SampleClockCard.dll",
+  "minHostApiVersion": 1
+}

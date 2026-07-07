@@ -2,12 +2,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ModernBoxes.Core.Interfaces;
 using ModernBoxes.Core.Models;
 using ModernBoxes.Infrastructure;
+using ModernBoxes.Infrastructure.Ai;
 using ModernBoxes.Presentation.Dialogs;
 using ModernBoxes.Presentation.Views;
+using ModernBoxes.Sdk.Plugins;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -16,7 +20,12 @@ namespace ModernBoxes.Presentation.ViewModels
 {
     public class SearchViewModel : ObservableObject
     {
+        public static readonly IReadOnlyList<string> ActionKeywords =
+            new[] { "app", "menu", "dir", "file", "note" };
+
         private readonly ISearchService _searchService;
+        private readonly AiPromptService _ai;
+        private readonly IUserNotifier _notifier;
         private readonly DispatcherTimer _debounceTimer;
 
         private string _searchText = "";
@@ -34,7 +43,18 @@ namespace ModernBoxes.Presentation.ViewModels
         public ObservableCollection<SearchResultModel> SearchResults
         {
             get => _searchResults;
-            set => SetProperty(ref _searchResults, value);
+            set
+            {
+                if (SetProperty(ref _searchResults, value))
+                    ResetSelection();
+            }
+        }
+
+        private int _selectedIndex = -1;
+        public int SelectedIndex
+        {
+            get => _selectedIndex;
+            set => SetProperty(ref _selectedIndex, value);
         }
 
         private bool _isSearching;
@@ -57,9 +77,11 @@ namespace ModernBoxes.Presentation.ViewModels
         public ICommand SelectResultCommand { get; }
         public ICommand ClearSearchCommand { get; }
 
-        public SearchViewModel(ISearchService searchService)
+        public SearchViewModel(ISearchService searchService, AiPromptService ai, IUserNotifier notifier)
         {
             _searchService = searchService;
+            _ai = ai;
+            _notifier = notifier;
 
             _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _debounceTimer.Tick += DebounceTimer_Tick;
@@ -68,6 +90,7 @@ namespace ModernBoxes.Presentation.ViewModels
             {
                 OnPropertyChanged(nameof(HasResults));
                 OnPropertyChanged(nameof(HasNoResults));
+                ResetSelection();
             };
 
             SelectResultCommand = new RelayCommand(o =>
@@ -77,6 +100,55 @@ namespace ModernBoxes.Presentation.ViewModels
             });
 
             ClearSearchCommand = new RelayCommand(_ => SearchText = "");
+        }
+
+        public void ResetForLaunch()
+        {
+            SearchText = string.Empty;
+            SearchResults.Clear();
+            SelectedIndex = -1;
+            IsSearching = false;
+        }
+
+        public bool TryCompleteActionKeyword()
+        {
+            var text = SearchText ?? string.Empty;
+            if (text.Contains(' '))
+                return false;
+
+            var partial = text.TrimStart();
+            if (string.IsNullOrEmpty(partial))
+                return false;
+
+            var match = ActionKeywords
+                .FirstOrDefault(k => k.StartsWith(partial, StringComparison.OrdinalIgnoreCase)
+                                     && !k.Equals(partial, StringComparison.OrdinalIgnoreCase));
+            if (match == null)
+                return false;
+
+            SearchText = match + " ";
+            return true;
+        }
+
+        public void MoveSelection(int delta)
+        {
+            if (SearchResults.Count == 0)
+            {
+                SelectedIndex = -1;
+                return;
+            }
+
+            var next = SelectedIndex < 0 ? 0 : SelectedIndex + delta;
+            if (next < 0)
+                next = 0;
+            if (next >= SearchResults.Count)
+                next = SearchResults.Count - 1;
+            SelectedIndex = next;
+        }
+
+        private void ResetSelection()
+        {
+            SelectedIndex = SearchResults.Count > 0 ? 0 : -1;
         }
 
         private void OnSearchTextChanged()
@@ -111,6 +183,8 @@ namespace ModernBoxes.Presentation.ViewModels
             try
             {
                 var results = await _searchService.SearchAsync(keyword);
+                if (results.Count == 0 && _ai.IsAvailable)
+                    results.Add(CreateAiFallbackResult(keyword));
                 SearchResults = new ObservableCollection<SearchResultModel>(results);
             }
             catch (Exception ex)
@@ -125,6 +199,13 @@ namespace ModernBoxes.Presentation.ViewModels
         {
             try
             {
+                _searchService.RecordSelection(result);
+                if (result.ExecuteAction != null)
+                {
+                    result.ExecuteAction();
+                    return;
+                }
+
                 switch (result.Type)
                 {
                     case ResultType.Application:
@@ -171,10 +252,37 @@ namespace ModernBoxes.Presentation.ViewModels
             }
         }
 
-        public void SelectFirstResult()
+        public void ExecuteSelectedResult()
         {
-            if (SearchResults.Count > 0)
+            if (SelectedIndex >= 0 && SelectedIndex < SearchResults.Count)
+                ExecuteResult(SearchResults[SelectedIndex]);
+            else if (SearchResults.Count > 0)
                 ExecuteResult(SearchResults[0]);
+        }
+
+        public void SelectFirstResult() => ExecuteSelectedResult();
+
+        private SearchResultModel CreateAiFallbackResult(string keyword) =>
+            new()
+            {
+                Name = $"问 AI：{keyword}",
+                Detail = "未找到本地结果，使用 AI 回答",
+                IconText = "🤖",
+                Score = -1,
+                ExecuteAction = () =>
+                {
+                    _ = RunAiSearchAsync(keyword);
+                    return true;
+                },
+            };
+
+        private async Task RunAiSearchAsync(string keyword)
+        {
+            var answer = await _ai.AnswerSearchAsync(keyword);
+            if (answer == null)
+                _notifier.ShowWarning("问 AI", "未配置 API 密钥或请求失败");
+            else
+                AiResultDialog.Show("问 AI", answer);
         }
     }
 }

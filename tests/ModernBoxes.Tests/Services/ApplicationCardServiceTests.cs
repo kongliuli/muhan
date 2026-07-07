@@ -14,6 +14,7 @@ public class ApplicationCardServiceTests
     private readonly Mock<IPersistenceProvider> _persistenceMock;
     private readonly Mock<IApplicationRepository> _repositoryMock;
     private readonly Mock<IIconExtractor> _iconExtractorMock;
+    private readonly Mock<IProcessLauncher> _launcherMock;
     private readonly ApplicationCardService _sut;
 
     public ApplicationCardServiceTests()
@@ -21,17 +22,19 @@ public class ApplicationCardServiceTests
         _persistenceMock = new Mock<IPersistenceProvider>();
         _repositoryMock = new Mock<IApplicationRepository>();
         _iconExtractorMock = new Mock<IIconExtractor>();
+        _launcherMock = new Mock<IProcessLauncher>();
         _sut = new ApplicationCardService(
             _persistenceMock.Object,
             _repositoryMock.Object,
-            _iconExtractorMock.Object);
+            _iconExtractorMock.Object,
+            _launcherMock.Object);
     }
 
-    private void SetupEmptyPersistence()
+    private void SetupEmptyRepository()
     {
-        _persistenceMock
-            .Setup(p => p.LoadAsync<ApplicationModel>("applications"))
-            .ReturnsAsync(new List<ApplicationModel>());
+        _repositoryMock
+            .Setup(r => r.GetAllApplications())
+            .Returns(new List<ApplicationModel>());
     }
 
     private void SetupSaveSuccess()
@@ -42,16 +45,16 @@ public class ApplicationCardServiceTests
     }
 
     [Fact]
-    public void GetAllApplications_ShouldReturnAllFromPersistence()
+    public void GetAllApplications_ShouldReturnAllFromRepository()
     {
         var apps = new List<ApplicationModel>
         {
             new() { FileName = "Notepad", AppPath = @"C:\Windows\notepad.exe" },
             new() { FileName = "Calc", AppPath = @"C:\Windows\calc.exe" }
         };
-        _persistenceMock
-            .Setup(p => p.LoadAsync<ApplicationModel>("applications"))
-            .ReturnsAsync(apps);
+        _repositoryMock
+            .Setup(r => r.GetAllApplications())
+            .Returns(apps);
 
         var result = _sut.GetAllApplications();
 
@@ -62,7 +65,7 @@ public class ApplicationCardServiceTests
     [Fact]
     public void GetAllApplications_ShouldReturnEmpty_WhenNoApps()
     {
-        SetupEmptyPersistence();
+        SetupEmptyRepository();
 
         var result = _sut.GetAllApplications();
 
@@ -70,19 +73,15 @@ public class ApplicationCardServiceTests
     }
 
     [Fact]
-    public void AddApplication_ShouldAddAndPersist()
+    public void AddApplication_ShouldAddToRepositoryAndPersist()
     {
-        SetupEmptyPersistence();
+        SetupEmptyRepository();
         SetupSaveSuccess();
         var app = new ApplicationModel { FileName = "NewApp", AppPath = @"C:\NewApp.exe" };
 
         _sut.AddApplication(app);
 
-        _persistenceMock.Verify(
-            p => p.SaveAsync("applications",
-                It.Is<IEnumerable<ApplicationModel>>(e =>
-                    e.Any(a => a.FileName == "NewApp" && a.AppPath == @"C:\NewApp.exe"))),
-            Times.Once);
+        _repositoryMock.Verify(r => r.AddApplication(app), Times.Once);
     }
 
     [Fact]
@@ -90,22 +89,20 @@ public class ApplicationCardServiceTests
     {
         var app = new ApplicationModel { FileName = "ToRemove", AppPath = @"C:\ToRemove.exe" };
         var apps = new List<ApplicationModel> { app };
-        _persistenceMock
-            .Setup(p => p.LoadAsync<ApplicationModel>("applications"))
-            .ReturnsAsync(apps);
+        _repositoryMock
+            .Setup(r => r.GetAllApplications())
+            .Returns(apps);
         SetupSaveSuccess();
 
         _sut.RemoveApplication(@"C:\ToRemove.exe");
 
-        _persistenceMock.Verify(
-            p => p.SaveAsync("applications", It.IsAny<IEnumerable<ApplicationModel>>()),
-            Times.AtLeastOnce);
+        _repositoryMock.Verify(r => r.DeleteApplication(@"C:\ToRemove.exe"), Times.Once);
     }
 
     [Fact]
     public void RemoveApplication_NotFound_ShouldNotThrow()
     {
-        SetupEmptyPersistence();
+        SetupEmptyRepository();
 
         var act = () => _sut.RemoveApplication(@"C:\Ghost.exe");
 
@@ -113,26 +110,13 @@ public class ApplicationCardServiceTests
     }
 
     [Fact]
-    public void GetAllApplications_WhenPersistenceThrows_ShouldPropagateException()
+    public void LaunchApplication_ShouldCallLauncher()
     {
-        _persistenceMock
-            .Setup(p => p.LoadAsync<ApplicationModel>("applications"))
-            .ThrowsAsync(new InvalidOperationException("Storage failure"));
+        var app = new ApplicationModel { FileName = "Test", AppPath = @"C:\app\test.exe" };
 
-        var act = () => _sut.GetAllApplications();
+        _sut.LaunchApplication(app);
 
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Storage failure");
-    }
-
-    [Fact]
-    public void LaunchApplication_ShouldNotThrowOnValidApp()
-    {
-        var app = new ApplicationModel { FileName = "Test", AppPath = @"C:\Windows\notepad.exe" };
-
-        var act = () => _sut.LaunchApplication(app);
-
-        act.Should().NotThrow();
+        _launcherMock.Verify(l => l.Start(@"C:\app\test.exe", false), Times.Once);
     }
 
     [Fact]

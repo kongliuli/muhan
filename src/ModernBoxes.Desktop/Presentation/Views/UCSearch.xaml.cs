@@ -1,5 +1,4 @@
 using ModernBoxes.Core.Models;
-using ModernBoxes.Infrastructure;
 using ModernBoxes.Presentation.ViewModels;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,20 +16,43 @@ namespace ModernBoxes.Presentation.Views
             DataContextChanged += (_, _) => _viewModel = DataContext as SearchViewModel;
         }
 
+        public void FocusSearchBox()
+        {
+            SearchTextBox.Focus();
+            SearchTextBox.SelectAll();
+        }
+
         private void SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (_viewModel == null)
                 return;
 
-            if (e.Key == Key.Enter)
+            switch (e.Key)
             {
-                _viewModel.SelectFirstResult();
-                e.Handled = true;
-            }
-            else if (e.Key == Key.Escape)
-            {
-                _viewModel.SearchText = "";
-                e.Handled = true;
+                case Key.Enter:
+                    _viewModel.ExecuteSelectedResult();
+                    e.Handled = true;
+                    break;
+                case Key.Escape:
+                    _viewModel.SearchText = "";
+                    e.Handled = true;
+                    break;
+                case Key.Down:
+                    _viewModel.MoveSelection(1);
+                    if (_viewModel.SelectedIndex >= 0 && _viewModel.SelectedIndex < _viewModel.SearchResults.Count)
+                        ResultsListBox.ScrollIntoView(_viewModel.SearchResults[_viewModel.SelectedIndex]);
+                    e.Handled = true;
+                    break;
+                case Key.Up:
+                    _viewModel.MoveSelection(-1);
+                    if (_viewModel.SelectedIndex >= 0 && _viewModel.SelectedIndex < _viewModel.SearchResults.Count)
+                        ResultsListBox.ScrollIntoView(_viewModel.SearchResults[_viewModel.SelectedIndex]);
+                    e.Handled = true;
+                    break;
+                case Key.Tab:
+                    if (_viewModel.TryCompleteActionKeyword())
+                        e.Handled = true;
+                    break;
             }
         }
 
@@ -43,6 +65,11 @@ namespace ModernBoxes.Presentation.Views
             {
                 if (ResultsListBox.SelectedItem is SearchResultModel result)
                     _viewModel.ExecuteResult(result);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape)
+            {
+                FocusSearchBox();
                 e.Handled = true;
             }
         }

@@ -1,0 +1,9 @@
+{
+  "id": "hello-jsonrpc",
+  "name": "Hello JsonRpc",
+  "type": "jsonrpc",
+  "runtime": "python",
+  "actionKeyword": "py",
+  "main": "main.py",
+  "minHostApiVersion": 1
+}

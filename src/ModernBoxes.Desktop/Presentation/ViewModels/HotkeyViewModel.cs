@@ -1,16 +1,22 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ModernBoxes.Desktop;
 using ModernBoxes.Infrastructure;
+using ModernBoxes.Infrastructure.Ai;
 using ModernBoxes.Presentation.Dialogs;
 using ModernBoxes.Presentation.ViewModels;
 using ModernBoxes.Presentation.Views;
+using ModernBoxes.Sdk.Plugins;
 using System;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace ModernBoxes.Presentation.ViewModels
 {
     public partial class HotkeyViewModel : ObservableObject
     {
         private readonly SearchViewModel _searchViewModel;
+        private readonly AiPromptService _ai;
+        private readonly IUserNotifier _notifier;
         private QuickLaunchWindow? _quickLaunchWindow;
         private bool _isLoading;
 
@@ -56,9 +62,25 @@ namespace ModernBoxes.Presentation.ViewModels
             }
         }
 
-        public HotkeyViewModel(SearchViewModel searchViewModel)
+        private string _translateClipboardHotkey = "Ctrl+Shift+T";
+        public string TranslateClipboardHotkey
+        {
+            get => _translateClipboardHotkey;
+            set
+            {
+                if (SetProperty(ref _translateClipboardHotkey, value) && !_isLoading)
+                {
+                    ConfigHelper.setConfig("TranslateClipboardHotkey", value);
+                    RegisterAll();
+                }
+            }
+        }
+
+        public HotkeyViewModel(SearchViewModel searchViewModel, AiPromptService ai, IUserNotifier notifier)
         {
             _searchViewModel = searchViewModel;
+            _ai = ai;
+            _notifier = notifier;
             Load();
         }
 
@@ -78,11 +100,16 @@ namespace ModernBoxes.Presentation.ViewModels
             if (!string.IsNullOrEmpty(palette))
                 _paletteHotkey = palette;
 
+            var translate = ConfigHelper.getConfig("TranslateClipboardHotkey");
+            if (!string.IsNullOrEmpty(translate))
+                _translateClipboardHotkey = translate;
+
             _isLoading = false;
 
             OnPropertyChanged(nameof(ShowHideHotkey));
             OnPropertyChanged(nameof(QuickNoteHotkey));
             OnPropertyChanged(nameof(PaletteHotkey));
+            OnPropertyChanged(nameof(TranslateClipboardHotkey));
         }
 
         public void RegisterAll()
@@ -132,6 +159,58 @@ namespace ModernBoxes.Presentation.ViewModels
                     System.Windows.Application.Current.Dispatcher.Invoke(ToggleQuickLaunch);
                 });
             }
+
+            if (HotkeyManager.TryParseHotkeyString(TranslateClipboardHotkey, out var translateMod, out var translateKey))
+            {
+                hk.RegisterHotkeyAction(translateMod, translateKey, () =>
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => _ = TranslateClipboardAsync());
+                });
+            }
+        }
+
+        private async Task TranslateClipboardAsync()
+        {
+            if (!_ai.IsAvailable)
+            {
+                _notifier.ShowWarning("剪贴板翻译", "未配置 API 密钥");
+                return;
+            }
+
+            if (!Clipboard.ContainsText())
+            {
+                _notifier.ShowWarning("剪贴板翻译", "剪贴板中没有文本");
+                return;
+            }
+
+            var text = Clipboard.GetText()?.Trim();
+            if (string.IsNullOrEmpty(text))
+            {
+                _notifier.ShowWarning("剪贴板翻译", "剪贴板中没有文本");
+                return;
+            }
+
+            var translated = await _ai.TranslateAsync(text);
+            if (translated == null)
+            {
+                _notifier.ShowWarning("剪贴板翻译", "翻译失败");
+                return;
+            }
+
+            Clipboard.SetText(translated);
+            AiResultDialog.Show("剪贴板翻译", translated);
+        }
+
+        public void ShowQuickLaunchPalette()
+        {
+            _quickLaunchWindow ??= new QuickLaunchWindow(_searchViewModel);
+            _quickLaunchWindow.ShowAndFocus();
+        }
+
+        public void HideQuickLaunchPalette()
+        {
+            if (_quickLaunchWindow?.IsVisible == true)
+                _quickLaunchWindow.Hide();
         }
 
         private void ToggleQuickLaunch()

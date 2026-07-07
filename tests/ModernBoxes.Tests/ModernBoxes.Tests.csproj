@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ModernBoxes.Cards\ModernBoxes.Cards.csproj" />
     <ProjectReference Include="..\..\src\ModernBoxes.Core\ModernBoxes.Core.csproj" />
+    <ProjectReference Include="..\..\src\ModernBoxes.Desktop\ModernBoxes.Desktop.csproj" />
     <ProjectReference Include="..\..\src\ModernBoxes.Infrastructure\ModernBoxes.Infrastructure.csproj" />
   </ItemGroup>
 

@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.singleton.1.6.0.schema.json
+PackageIdentifier: kongliuli.ModernBoxes
+PackageVersion: 1.0.0
+PackageLocale: zh-CN
+Publisher: kongliuli
+PublisherUrl: https://github.com/kongliuli
+PublisherSupportUrl: https://github.com/kongliuli/muhan/issues
+PackageName: 木函 ModernBoxes
+PackageUrl: https://github.com/kongliuli/muhan
+License: MIT
+ShortDescription: 桌面工作台与搜索优先插件平台
+Moniker: modernboxes
+Tags:
+  - launcher
+  - productivity
+  - notes
+Installers:
+  - Architecture: x64
+    InstallerType: exe
+    InstallerUrl: https://github.com/kongliuli/muhan/releases/download/v1.0.0/ModernBoxes-win-Setup.exe
+    InstallerSha256: PLACEHOLDER
+    Scope: user
+ManifestType: singleton
+ManifestVersion: 1.6.0

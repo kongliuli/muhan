@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using ModernBoxes.Core.Interfaces;
+using ModernBoxes.Sdk.Plugins;
 using ModernBoxes.Core.Models;
 using ModernBoxes.Desktop.Presentation;
 using ModernBoxes.Infrastructure;

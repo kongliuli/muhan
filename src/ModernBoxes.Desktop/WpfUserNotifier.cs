@@ -1,5 +1,6 @@
 using ModernBoxes.Core.Enums;
 using ModernBoxes.Core.Interfaces;
+using ModernBoxes.Sdk.Plugins;
 using ModernBoxes.Presentation.Dialogs;
 using ModernBoxes.Presentation.Views;
 

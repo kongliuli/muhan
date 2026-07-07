@@ -55,14 +55,62 @@ namespace ModernBoxes.Infrastructure.Data.Repositories
             }
 
             tx.Commit();
+            FtsSearchIndex.RebuildNotes(conn);
         }
 
         public List<SearchResultModel> SearchNotes(string query)
         {
-            var results = new List<SearchResultModel>();
-            var searchParam = $"%{query}%";
             using var conn = _db.GetConnection();
             conn.Open();
+            if (FtsSearchIndex.HasNotesIndex(conn))
+            {
+                try
+                {
+                    return SearchNotesFts(conn, query);
+                }
+                catch (SqliteException)
+                {
+                    // ponytail: FTS 语法异常时回退 LIKE
+                }
+            }
+            return SearchNotesLike(conn, query);
+        }
+
+        private static List<SearchResultModel> SearchNotesFts(SqliteConnection conn, string query)
+        {
+            var results = new List<SearchResultModel>();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT note_id, title, content FROM NotesFts WHERE NotesFts MATCH @search";
+            cmd.Parameters.AddWithValue("@search", FtsSearchIndex.QuoteFtsLiteral(query));
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var title = reader.IsDBNull(1) || string.IsNullOrEmpty(reader.GetString(1))
+                    ? "\u65e0\u6807\u9898"
+                    : reader.GetString(1);
+                var content = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                var preview = content.Length > 50 ? content[..50] + "..." : content;
+                results.Add(new SearchResultModel
+                {
+                    Type = ResultType.Note,
+                    Name = title,
+                    Detail = preview,
+                    IconText = "\ud83d\udcdd",
+                    ActionTarget = new NoteModel
+                    {
+                        Id = Guid.Parse(reader.GetString(0)),
+                        Title = title,
+                        Content = content
+                    }
+                });
+            }
+            return results;
+        }
+
+        private static List<SearchResultModel> SearchNotesLike(SqliteConnection conn, string query)
+        {
+            var results = new List<SearchResultModel>();
+            var searchParam = $"%{query}%";
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "SELECT Id, Title, Content FROM Notes WHERE Title LIKE @search OR Content LIKE @search";
             cmd.Parameters.AddWithValue("@search", searchParam);

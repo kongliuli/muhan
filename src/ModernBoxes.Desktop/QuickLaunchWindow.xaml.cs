@@ -1,5 +1,4 @@
 using ModernBoxes.Presentation.ViewModels;
-using ModernBoxes.Presentation.Views;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,29 +11,8 @@ namespace ModernBoxes.Desktop
         public QuickLaunchWindow(SearchViewModel searchViewModel)
         {
             _searchViewModel = searchViewModel;
-            Title = "木函";
-            Width = 640;
-            Height = 420;
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            WindowStyle = WindowStyle.None;
-            AllowsTransparency = true;
-            Background = System.Windows.Media.Brushes.Transparent;
-            ShowInTaskbar = false;
-            Topmost = true;
-
-            var search = new UCSearch { DataContext = searchViewModel };
-            Content = new System.Windows.Controls.Border
-            {
-                CornerRadius = new CornerRadius(12),
-                Background = (System.Windows.Media.Brush)System.Windows.Application.Current.FindResource("RegionBrush"),
-                Child = search,
-                Effect = new System.Windows.Media.Effects.DropShadowEffect
-                {
-                    BlurRadius = 24,
-                    ShadowDepth = 0,
-                    Opacity = 0.35,
-                },
-            };
+            InitializeComponent();
+            SearchPanel.DataContext = searchViewModel;
 
             PreviewKeyDown += (_, e) =>
             {
@@ -50,12 +28,11 @@ namespace ModernBoxes.Desktop
 
         public void ShowAndFocus()
         {
-            _searchViewModel.SearchText = string.Empty;
-            _searchViewModel.SearchResults.Clear();
+            _searchViewModel.ResetForLaunch();
             if (!IsVisible)
                 Show();
             Activate();
-            Focus();
+            SearchPanel.FocusSearchBox();
         }
     }
 }

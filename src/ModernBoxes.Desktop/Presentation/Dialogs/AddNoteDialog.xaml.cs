@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using ModernBoxes.Core.Models;
 using ModernBoxes.Infrastructure;
 using ModernBoxes.Presentation.ViewModels;
@@ -15,7 +16,9 @@ namespace ModernBoxes.Presentation.Dialogs
         public AddNoteDialog(NoteModel note)
         {
             InitializeComponent();
-            this.DataContext = new AddNoteDialogViewModel(note);
+            var vm = ModernBoxes.App.AppHost!.Services.GetRequiredService<AddNoteDialogViewModel>();
+            vm.LoadNote(note);
+            DataContext = vm;
         }
     }
 }

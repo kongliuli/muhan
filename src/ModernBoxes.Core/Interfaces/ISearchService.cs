@@ -7,5 +7,6 @@ namespace ModernBoxes.Core.Interfaces
     public interface ISearchService
     {
         Task<List<SearchResultModel>> SearchAsync(string query);
+        void RecordSelection(SearchResultModel result);
     }
 }

@@ -66,6 +66,7 @@ namespace ModernBoxes.Infrastructure.Data
                 );
             ";
             cmd.ExecuteNonQuery();
+            FtsSearchIndex.EnsureSchema(conn);
         }
 
         public void Initialize()

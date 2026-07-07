@@ -89,13 +89,13 @@ namespace ModernBoxes.Presentation.ViewModels
         {
             _service = service;
             WeakReferenceMessenger.Default.Register<String>(this, "detempdir", (path) => _ = DoDeleteTempDir(path));
-            WeakReferenceMessenger.Default.Register<String>(this, "RemoveTempDir", RemoveTempDir);
-            WeakReferenceMessenger.Default.Register<DirChangedMessage>(this, (r, m) => RefreshData());
+            WeakReferenceMessenger.Default.Register<String>(this, "RemoveTempDir", path => _ = RemoveTempDirAsync(path));
+            WeakReferenceMessenger.Default.Register<DirChangedMessage>(this, (r, m) => _ = RefreshDataAsync());
             WeakReferenceMessenger.Default.Register<AddTempDirMessage>(this, (r, m) => AddTempDirItem(m.Dir));
             _ = init();
         }
 
-        public async void RemoveTempDir(String path)
+        public async Task RemoveTempDirAsync(String path)
         {
             TempDirs.Remove(TempDirs.FirstOrDefault(o => o.TempDirPath == path));
             await _service.RemoveDirectory(path);
@@ -126,7 +126,7 @@ namespace ModernBoxes.Presentation.ViewModels
             await _service.RemoveDirectory(path);
         }
 
-        public async void RefreshData()
+        public async Task RefreshDataAsync()
         {
             TempDirs.Clear();
             var dirs = await _service.GetAllDirectories();
