@@ -245,15 +245,13 @@
                             Command="{Binding RefreshStoreCommand}"
                             Content="加载 Flow 商店" />
                     </StackPanel>
+                    <!--  双击安装不能用 InputBindings：ListBoxItem 会把 MouseLeftButtonDown 标记为已处理，手势收不到  -->
                     <ListBox
                         Height="160"
                         DisplayMemberPath="Name"
                         ItemsSource="{Binding StorePlugins}"
-                        SelectedItem="{Binding SelectedStorePlugin, Mode=TwoWay}">
-                        <ListBox.InputBindings>
-                            <MouseBinding Command="{Binding InstallSelectedCommand}" Gesture="LeftDoubleClick" />
-                        </ListBox.InputBindings>
-                    </ListBox>
+                        MouseDoubleClick="StorePluginList_MouseDoubleClick"
+                        SelectedItem="{Binding SelectedStorePlugin, Mode=TwoWay}" />
                     <TextBlock
                         Margin="0,4,0,0"
                         FontSize="11"

@@ -34,6 +34,12 @@ namespace ModernBoxes.Presentation.Dialogs
             _viewModel.Save();
         }
 
+        private void StorePluginList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListBox lb && lb.DataContext is PluginManagerViewModel vm && vm.SelectedStorePlugin != null)
+                _ = vm.InstallSelectedAsync();
+        }
+
         private void RB_light_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.Theme = Theme.light;

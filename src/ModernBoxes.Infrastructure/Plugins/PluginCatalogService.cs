@@ -96,7 +96,7 @@ namespace ModernBoxes.Infrastructure.Plugins
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(entry.UrlDownload))
-                return new PluginInstallResult { Success = false, PluginName = entry.Name };
+                return new PluginInstallResult { Success = false, PluginName = entry.Name, ErrorMessage = "该插件没有提供下载地址" };
 
             Directory.CreateDirectory(AppPaths.Plugins);
             var tempRoot = Path.Combine(Path.GetTempPath(), "muhan-plugin-" + Guid.NewGuid().ToString("N"));
@@ -113,7 +113,7 @@ namespace ModernBoxes.Infrastructure.Plugins
 
                 var contentDir = FindPluginContentRoot(extractDir);
                 if (!InstallFromFlowStoreContent(contentDir, entry, out var manifest))
-                    return new PluginInstallResult { Success = false, PluginName = entry.Name };
+                    return new PluginInstallResult { Success = false, PluginName = entry.Name, ErrorMessage = "插件包里没有可识别的 plugin.json 或主程序 DLL" };
 
                 _reload.Reload();
                 return new PluginInstallResult
@@ -127,7 +127,7 @@ namespace ModernBoxes.Infrastructure.Plugins
             catch (Exception ex)
             {
                 Logger.Warn($"Install Flow plugin failed: {entry.Name}. {ex.Message}");
-                return new PluginInstallResult { Success = false, PluginName = entry.Name };
+                return new PluginInstallResult { Success = false, PluginName = entry.Name, ErrorMessage = ex.Message };
             }
             finally
             {

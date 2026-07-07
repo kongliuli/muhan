@@ -62,12 +62,12 @@ public partial class PluginManagerViewModel : ObservableObject
         IsBusy = true;
         try
         {
+            StatusMessage = $"正在下载「{SelectedStorePlugin.Name}」…";
             var result = await _catalog.InstallFromFlowStoreAsync(SelectedStorePlugin);
             StatusMessage = result.Success
                 ? $"已安装并启用「{result.PluginName}」，可立即在搜索中使用。"
-                : $"安装「{SelectedStorePlugin.Name}」失败。";
-            if (result.Success)
-                _notifier.ShowWarning("插件安装", StatusMessage);
+                : $"安装「{SelectedStorePlugin.Name}」失败：{result.ErrorMessage ?? "未知原因"}";
+            _notifier.ShowWarning("插件安装", StatusMessage);
         }
         finally
         {
