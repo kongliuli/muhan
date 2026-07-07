@@ -1,0 +1,13 @@
+root = true
+
+# 防止再次出现中文乱码：所有源文件强制 UTF-8
+[*]
+charset = utf-8
+insert_final_newline = true
+
+# C# / XAML 带 BOM，避免旧工具按本地代码页（GBK）误读
+[*.{cs,xaml,csproj,props,config}]
+charset = utf-8-bom
+
+[*.{json,md,yml}]
+charset = utf-8

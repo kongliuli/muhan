@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+.backup/
+TestResults/
+*.user
+*.suo
+.codegraph/
+*.trx
+OneWordCache.json
+.cursor/

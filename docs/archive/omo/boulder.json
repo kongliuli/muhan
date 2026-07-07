@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "active_work_id": "modern-architecture-v3-rebuild",
+  "works": {
+    "modern-architecture-v3-rebuild": {
+      "work_id": "modern-architecture-v3-rebuild",
+      "active_plan": ".omo/plans/modern-architecture-v3.md",
+      "plan_name": "modern-architecture-v3",
+      "session_ids": ["codex:modern-arch-v3-rebuild"],
+      "status": "active",
+      "worktree_path": null
+    }
+  }
+}

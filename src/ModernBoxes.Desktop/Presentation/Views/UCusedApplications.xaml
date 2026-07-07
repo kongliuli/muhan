@@ -1,0 +1,83 @@
+﻿<UserControl
+    x:Class="ModernBoxes.Presentation.Views.UCusedApplications"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    AllowDrop="True"
+    DataContext="{Binding UCusedApplicationViewModel, Source={StaticResource Locator}}"
+    Drop="UserControl_Drop"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Presentation/Resources/UCusedApplicationDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <hc:TransitioningContentControl>
+        <Border Background="Transparent">
+
+            <Grid>
+                <!--  空状态  -->
+                <svg:SvgViewbox
+                    Margin="20"
+                    Source="/Resource/svg/empty.svg"
+                    Visibility="{Binding IsShowBgEmpty}" />
+                <hc:ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Apps}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <hc:TransitioningContentControl>
+                                    <Button
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.RunApplication}"
+                                        CommandParameter="{Binding AppPath}"
+                                        Style="{DynamicResource ApplicationItemStyle}">
+                                        <Button.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem
+                                                    VerticalContentAlignment="Center"
+                                                    Click="MenuItem_Click"
+                                                    CommandParameter="{Binding AppPath}"
+                                                    FontFamily="/Resource/#iconfont"
+                                                    Header="删除"
+                                                    Icon="&#xe617;" />
+                                            </ContextMenu>
+                                        </Button.ContextMenu>
+                                    </Button>
+                                </hc:TransitioningContentControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <hc:ScrollViewer x:Name="ScrollViewer">
+                                    <ItemsPresenter />
+                                </hc:ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+                </hc:ScrollViewer>
+            </Grid>
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem
+                        VerticalContentAlignment="Center"
+                        Command="{Binding OpenAddApplicationDialog}"
+                        FontFamily="/Resource/#iconfont"
+                        Header="添加应用"
+                        Icon="&#xe7c4;" />
+                    <Separator />
+                </ContextMenu>
+            </Border.ContextMenu>
+        </Border>
+    </hc:TransitioningContentControl>
+</UserControl>

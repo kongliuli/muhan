@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
+  <Identity Name="ModernBoxes.Muhan" 
+            Publisher="CN=ModernBoxes" 
+            Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>木函 ModernBoxes</DisplayName>
+    <PublisherDisplayName>ModernBoxes Team</PublisherDisplayName>
+    <Logo>Resource\logo.ico</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="zh-CN" />
+  </Resources>
+  <Applications>
+    <Application Id="ModernBoxes" Executable="ModernBoxes.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="木函 ModernBoxes" Description="桌面侧边栏助手"
+          Square150x150Logo="Resource\logo.ico" Square44x44Logo="Resource\logo.ico"
+          BackgroundColor="transparent">
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

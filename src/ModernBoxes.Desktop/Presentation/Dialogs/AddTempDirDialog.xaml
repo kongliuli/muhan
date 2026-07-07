@@ -1,0 +1,101 @@
+﻿<UserControl
+    x:Class="ModernBoxes.Presentation.Dialogs.AddTempDirDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:local="clr-namespace:ModernBoxes.Presentation.Dialogs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Margin="10"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Background="{DynamicResource RegionBrush}"
+    DataContext="{Binding AddTempDirViewModel, Source={StaticResource Locator}}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="\Resource\dictionary\AddTempDirDialogDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <hc:TransitioningContentControl Margin="10">
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="TB_DirPath"
+                    Grid.Column="0"
+                    Margin="5,0,5,0"
+                    VerticalAlignment="Center"
+                    hc:InfoElement.Necessary="True"
+                    hc:InfoElement.Placeholder="文件夹路径"
+                    hc:InfoElement.TitlePlacement="Left"
+                    Style="{StaticResource TextBoxExtend}"
+                    Text="{Binding DirModel.TempDirPath, Mode=TwoWay}" />
+                <Button
+                    x:Name="btn_ChooseDirPath"
+                    Grid.Column="1"
+                    Margin="5,0,5,0"
+                    VerticalAlignment="Center"
+                    Command="{Binding ChoseDir}"
+                    Content="选择"
+                    Style="{DynamicResource ButtonPrimary}" />
+            </Grid>
+            <StackPanel
+                Name="SP_isRef"
+                Margin="10,10,10,0"
+                Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Text="是否引用" />
+                <ToggleButton
+                    x:Name="TB_DirRef"
+                    Margin="26,0,0,0"
+                    HorizontalAlignment="Center"
+                    IsChecked="True"
+                    Style="{StaticResource ToggleButtonSwitch}" />
+                <TextBlock
+                    Margin="30,0,0,0"
+                    VerticalAlignment="Center"
+                    FontFamily="/Resource/#iconfont"
+                    FontSize="18"
+                    Foreground="LightGray"
+                    Text="&#xe8ac;">
+                    <hc:Poptip.Instance>
+                        <hc:Poptip Content="开启后，文件夹将复制到缓存目录以便快速访问" PlacementType="Right" />
+                    </hc:Poptip.Instance>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Margin="10" Orientation="Horizontal">
+                <TextBlock
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Text="重要程度" />
+                <RadioButton
+                    x:Name="red"
+                    IsChecked="{Binding DirKind[0]}"
+                    Style="{StaticResource RadioButtonStyle1}" />
+                <RadioButton
+                    Name="yellow"
+                    IsChecked="{Binding DirKind[1]}"
+                    Style="{StaticResource RadioButtonStyle2}" />
+                <RadioButton
+                    x:Name="blue"
+                    IsChecked="{Binding DirKind[2]}"
+                    Style="{StaticResource RadioButtonStyle3}" />
+                <RadioButton
+                    x:Name="green"
+                    IsChecked="{Binding DirKind[3]}"
+                    Style="{StaticResource RadioButtonStyle4}" />
+            </StackPanel>
+            <Button
+                VerticalAlignment="Center"
+                Command="{Binding AddTempDir}"
+                CommandParameter="{Binding ElementName=TB_DirRef}"
+                Content="确定"
+                Style="{DynamicResource ButtonPrimary}" />
+        </StackPanel>
+    </hc:TransitioningContentControl>
+</UserControl>

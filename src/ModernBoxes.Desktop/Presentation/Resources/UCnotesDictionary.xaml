@@ -1,0 +1,8 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:convert="clr-namespace:ModernBoxes.Presentation.Converters">
+
+    <convert:StringToColorConverter x:Key="StringToColorConverter" />
+    <convert:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+</ResourceDictionary>

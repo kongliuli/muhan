@@ -1,0 +1,235 @@
+﻿<UserControl
+    x:Class="ModernBoxes.Presentation.Views.UCnotes"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:local="clr-namespace:ModernBoxes.Presentation.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    DataContext="{Binding UCnotesViewModel, Source={StaticResource Locator}}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Presentation/Resources/UCnotesDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <hc:TransitioningContentControl>
+        <Border Background="Transparent">
+            <Grid>
+                <svg:SvgViewbox
+                    x:Name="EmptySvg"
+                    Margin="20"
+                    Source="/Resource/svg/empty2.svg"
+                    Visibility="{Binding IsShowBgEmpty}">
+                    <svg:SvgViewbox.RenderTransform>
+                        <TranslateTransform X="0" Y="0" />
+                    </svg:SvgViewbox.RenderTransform>
+                    <svg:SvgViewbox.Style>
+                        <Style TargetType="svg:SvgViewbox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsShowBgEmpty}" Value="Visible">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                <DoubleAnimation
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                    From="0"
+                                                    To="-6"
+                                                    Duration="0:0:2">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseInOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </svg:SvgViewbox.Style>
+                </svg:SvgViewbox>
+                <hc:ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Notes}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    x:Name="NoteCardBorder"
+                                    Width="180"
+                                    Height="140"
+                                    Margin="6"
+                                    Background="{Binding Color, Converter={StaticResource StringToColorConverter}}"
+                                    CornerRadius="6"
+                                    Cursor="Hand">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                            <TranslateTransform X="0" Y="0" />
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+                                    <Border
+                                        Width="180"
+                                        Height="140"
+                                        CornerRadius="6"
+                                        Padding="8">
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem
+                                                    Click="MenuItem_Edit_Click"
+                                                    FontFamily="/Resource/#iconfont"
+                                                    Header="编辑"
+                                                    Icon="&#xe60e;"
+                                                    Tag="{Binding}" />
+                                                <MenuItem
+                                                    Click="MenuItem_Pin_Click"
+                                                    FontFamily="/Resource/#iconfont"
+                                                    Header="置顶"
+                                                    Icon="&#xe621;"
+                                                    Tag="{Binding}" />
+                                                <MenuItem
+                                                    Click="MenuItem_Unpin_Click"
+                                                    FontFamily="/Resource/#iconfont"
+                                                    Header="取消置顶"
+                                                    Icon="&#xe7a0;"
+                                                    Tag="{Binding}" />
+                                                <MenuItem
+                                                    Click="MenuItem_Delete_Click"
+                                                    FontFamily="/Resource/#iconfont"
+                                                    Header="删除"
+                                                    Icon="&#xe617;"
+                                                    Tag="{Binding}" />
+                                                <Separator />
+                                                <MenuItem FontFamily="/Resource/#iconfont" Header="颜色" Tag="{Binding}">
+                                                    <MenuItem
+                                                        Click="MenuItem_Color_Click"
+                                                        Background="#FFE4B5"
+                                                        Header="黄"
+                                                        CommandParameter="#FFE4B5" />
+                                                    <MenuItem
+                                                        Click="MenuItem_Color_Click"
+                                                        Background="#B0E0E6"
+                                                        Header="蓝"
+                                                        CommandParameter="#B0E0E6" />
+                                                    <MenuItem
+                                                        Click="MenuItem_Color_Click"
+                                                        Background="#98FB98"
+                                                        Header="绿"
+                                                        CommandParameter="#98FB98" />
+                                                    <MenuItem
+                                                        Click="MenuItem_Color_Click"
+                                                        Background="#FFB6C1"
+                                                        Header="粉"
+                                                        CommandParameter="#FFB6C1" />
+                                                    <MenuItem
+                                                        Click="MenuItem_Color_Click"
+                                                        Background="#FFFFFF"
+                                                        Header="白"
+                                                        CommandParameter="#FFFFFF" />
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <StackPanel
+                                                Grid.Row="0"
+                                                HorizontalAlignment="Stretch"
+                                                Orientation="Horizontal">
+                                                <TextBlock
+                                                    MaxWidth="130"
+                                                    FontSize="13"
+                                                    FontWeight="Bold"
+                                                    Text="{Binding Title}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    TextWrapping="NoWrap" />
+                                                <TextBlock
+                                                    Margin="4,0,0,0"
+                                                    FontFamily="/Resource/#iconfont"
+                                                    FontSize="12"
+                                                    Foreground="#FF6B6B"
+                                                    Text="&#xe621;"
+                                                    Visibility="{Binding IsPinned, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                            </StackPanel>
+                                            <TextBlock
+                                                Grid.Row="1"
+                                                Margin="0,4,0,0"
+                                                FontSize="11"
+                                                Foreground="#666666"
+                                                Text="{Binding Content}"
+                                                TextTrimming="CharacterEllipsis"
+                                                TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Border>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Effect">
+                                                        <Setter.Value>
+                                                            <DropShadowEffect
+                                                                BlurRadius="8"
+                                                                Opacity="0.3"
+                                                                ShadowDepth="2"
+                                                                Color="#000000" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <hc:ScrollViewer x:Name="ScrollViewer">
+                                    <StackPanel Orientation="Vertical">
+                                        <ItemsPresenter />
+                                        <Button
+                                            Width="180"
+                                            Height="140"
+                                            Margin="6"
+                                            Command="{Binding AddNote}"
+                                            Style="{StaticResource ButtonDefault}">
+                                            <StackPanel>
+                                                <TextBlock
+                                                    FontFamily="/Resource/#iconfont"
+                                                    FontSize="32"
+                                                    Foreground="#999999"
+                                                    Text="&#xe7c4;" />
+                                                <TextBlock
+                                                    Margin="0,4,0,0"
+                                                    Foreground="#999999"
+                                                    Text="新建便签" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </hc:ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+                </hc:ScrollViewer>
+            </Grid>
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem
+                        Command="{Binding AddNote}"
+                        FontFamily="/Resource/#iconfont"
+                        Header="新建便签"
+                        Icon="&#xe7c4;" />
+                </ContextMenu>
+            </Border.ContextMenu>
+        </Border>
+    </hc:TransitioningContentControl>
+</UserControl>
