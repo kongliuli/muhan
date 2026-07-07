@@ -167,7 +167,7 @@
                     Grid.Column="0"
                     Width="440"
                     Margin="10,0,10,10"
-                    Visibility="Hidden">
+                    Visibility="Collapsed">
                     <ContentControl x:Name="LeftContent" />
                 </hc:TransitioningContentControl>
 
@@ -176,7 +176,7 @@
                     Grid.Column="2"
                     Width="440"
                     Margin="10,0,10,10"
-                    Visibility="Hidden">
+                    Visibility="Collapsed">
                     <ContentControl x:Name="RightContent" />
                 </hc:TransitioningContentControl>
 

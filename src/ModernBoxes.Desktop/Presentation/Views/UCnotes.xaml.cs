@@ -92,22 +92,6 @@ namespace ModernBoxes.Presentation.Views
             Storyboard.SetTargetProperty(opacityAnim, new PropertyPath(UIElement.OpacityProperty));
             storyboard.Children.Add(opacityAnim);
 
-            var scaleXAnim = new DoubleAnimation(1, 0.8, TimeSpan.FromMilliseconds(250))
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
-            };
-            Storyboard.SetTarget(scaleXAnim, element);
-            Storyboard.SetTargetProperty(scaleXAnim, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"));
-            storyboard.Children.Add(scaleXAnim);
-
-            var scaleYAnim = new DoubleAnimation(1, 0.8, TimeSpan.FromMilliseconds(250))
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
-            };
-            Storyboard.SetTarget(scaleYAnim, element);
-            Storyboard.SetTargetProperty(scaleYAnim, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"));
-            storyboard.Children.Add(scaleYAnim);
-
             storyboard.Completed += (s, a) =>
             {
                 viewModel.Notes.Remove(note);

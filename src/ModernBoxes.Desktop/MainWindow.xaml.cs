@@ -98,11 +98,11 @@ namespace ModernBoxes
         {
             if (commentLayout == CommentLayout.right)
             {
-                componentLayoutRight.Visibility = (componentLayoutRight.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
+                componentLayoutRight.Visibility = (componentLayoutRight.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible);
             }
             else
             {
-                componentLayoutLeft.Visibility = (componentLayoutLeft.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible);
+                componentLayoutLeft.Visibility = (componentLayoutLeft.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible);
             }
 
             InvalidateMeasure();
@@ -113,8 +113,8 @@ namespace ModernBoxes
         /// </summary>
         public void CloseComponentLayout()
         {
-            componentLayoutLeft.Visibility = Visibility.Hidden;
-            componentLayoutRight.Visibility = Visibility.Hidden;
+            componentLayoutLeft.Visibility = Visibility.Collapsed;
+            componentLayoutRight.Visibility = Visibility.Collapsed;
             loadComment();
         }
 
