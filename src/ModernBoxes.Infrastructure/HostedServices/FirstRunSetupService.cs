@@ -47,11 +47,11 @@ namespace ModernBoxes.Infrastructure.HostedServices
 
                 var defaultCards = new List<CardContentModel>
                 {
-                    new() { CardName = "一言", IsChecked = true, CardID = 0, CardHeight = 100, Preview = "/Resource/image/previews/onenote1.png" },
-                    new() { CardName = "应用", IsChecked = true, CardID = 1, CardHeight = 235, Preview = "/Resource/image/previews/application.png" },
-                    new() { CardName = "文件夹", IsChecked = true, CardID = 2, CardHeight = 235, Preview = "/Resource/image/previews/dir1.png" },
-                    new() { CardName = "文件", IsChecked = true, CardID = 3, CardHeight = 235, Preview = "/Resource/image/previews/file1.png" },
-                    new() { CardName = "便签", IsChecked = false, CardID = 4, CardHeight = 235, Preview = "/Resource/image/previews/notes1.png" },
+                    new() { CardName = "一言", IsChecked = true, CardID = 0, CardHeight = 100, Order = 0, Preview = "/Resource/image/previews/onenote1.png" },
+                    new() { CardName = "应用", IsChecked = true, CardID = 1, CardHeight = 235, Order = 1, Preview = "/Resource/image/previews/application.png" },
+                    new() { CardName = "文件夹", IsChecked = true, CardID = 2, CardHeight = 235, Order = 2, Preview = "/Resource/image/previews/dir1.png" },
+                    new() { CardName = "文件", IsChecked = true, CardID = 3, CardHeight = 235, Order = 3, Preview = "/Resource/image/previews/file1.png" },
+                    new() { CardName = "便签", IsChecked = false, CardID = 4, CardHeight = 235, Order = 4, Preview = "/Resource/image/previews/notes1.png" },
                 };
                 await _persistence.SaveAsync("cardconfigs", defaultCards);
 

@@ -19,24 +19,54 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <hc:TransitioningContentControl>
-        <hc:ScrollViewer Orientation="Vertical">
-            <ItemsControl ItemsSource="{Binding CardApps}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <CheckBox
-                            Name="CB_ChangeCardApp"
-                            Click="CB_ChangeCardApp_Click"
-                            IsChecked="{Binding IsChecked}"
-                            Style="{StaticResource CbCardAppStyle}"
-                            Tag="{Binding CardID}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </hc:ScrollViewer>
+        <DockPanel LastChildFill="True">
+            <StackPanel
+                Margin="0,0,0,8"
+                DockPanel.Dock="Top"
+                Orientation="Horizontal">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    Foreground="Gray"
+                    Text="勾选显示 · ↑↓ 调整顺序 · 关闭对话框时保存" />
+            </StackPanel>
+            <hc:ScrollViewer Orientation="Vertical">
+                <ItemsControl ItemsSource="{Binding CardApps}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="4" Orientation="Vertical">
+                                <CheckBox
+                                    Name="CB_ChangeCardApp"
+                                    Click="CB_ChangeCardApp_Click"
+                                    IsChecked="{Binding IsChecked}"
+                                    Style="{StaticResource CbCardAppStyle}"
+                                    Tag="{Binding CardID}" />
+                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    <Button
+                                        Width="28"
+                                        Margin="2,4,2,0"
+                                        Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Content="↑"
+                                        ToolTip="上移" />
+                                    <Button
+                                        Width="28"
+                                        Margin="2,4,2,0"
+                                        Command="{Binding DataContext.MoveDownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Content="↓"
+                                        ToolTip="下移" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </hc:ScrollViewer>
+        </DockPanel>
     </hc:TransitioningContentControl>
 </UserControl>

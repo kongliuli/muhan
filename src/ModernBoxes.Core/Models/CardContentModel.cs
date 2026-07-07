@@ -52,5 +52,14 @@ namespace ModernBoxes.Core.Models
             get => isChecked;
             set { isChecked = value; OnPropertyChanged(nameof(IsChecked)); }
         }
+
+        private int order;
+
+        /// <summary>面板内排序，越小越靠上。</summary>
+        public int Order
+        {
+            get => order;
+            set { order = value; OnPropertyChanged(nameof(Order)); }
+        }
     }
 }

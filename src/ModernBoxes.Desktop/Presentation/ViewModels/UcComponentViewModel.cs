@@ -8,6 +8,7 @@ using ModernBoxes.Desktop.Presentation;
 using ModernBoxes.Infrastructure;
 using ModernBoxes.Infrastructure.Plugins;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,6 +66,7 @@ namespace ModernBoxes.Presentation.ViewModels
 
                 // 按卡片名称匹配配置，而不是按下标：插件增删或反射顺序变化时配置不会错乱
                 int nextCardId = configItems.Count > 0 ? configItems.Max(c => c.CardID) + 1 : 0;
+                var pending = new List<CardContentModel>();
                 foreach (var cardMeta in availableCards)
                 {
                     var config = configItems.FirstOrDefault(c => c.CardName == cardMeta.CardName);
@@ -76,17 +78,20 @@ namespace ModernBoxes.Presentation.ViewModels
                         catch (Exception ex) { Logger.Error(ex, $"Error loading card '{cardMeta.CardName}'"); }
                     });
 
-                    var content = new CardContentModel()
+                    pending.Add(new CardContentModel()
                     {
                         CardName = cardMeta.CardName,
                         IsChecked = config?.IsChecked ?? false,
                         CardID = config?.CardID ?? nextCardId++,
                         CardHeight = config?.CardHeight ?? viewModel.CardHeight,
+                        Order = config?.Order ?? pending.Count,
+                        Preview = config?.Preview ?? viewModel.Preview,
                         CardContent = CardViewResolver.Resolve(cardMeta.CardName, cardMeta.ViewType, viewModel)
-                    };
-
-                    _ = Application.Current.Dispatcher.InvokeAsync(() => CardContents.Add(content));
+                    });
                 }
+
+                foreach (var content in pending.OrderBy(c => c.Order).ThenBy(c => c.CardID))
+                    _ = Application.Current.Dispatcher.InvokeAsync(() => CardContents.Add(content));
             }
             catch (Exception ex) { Logger.Error(ex, "Error loading card content"); }
         }

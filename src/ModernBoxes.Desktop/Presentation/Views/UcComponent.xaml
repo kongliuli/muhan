@@ -20,7 +20,25 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <hc:TransitioningContentControl>
-        <hc:ScrollViewer Name="ScrollViewer" Margin="0,0,0,-15">
+        <DockPanel LastChildFill="True">
+            <StackPanel
+                Margin="0,0,5,8"
+                DockPanel.Dock="Top"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="4,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    FontWeight="SemiBold"
+                    Text="小组件" />
+                <Button
+                    Margin="12,0,0,0"
+                    Padding="8,2"
+                    Click="ManageCards_Click"
+                    Content="管理"
+                    ToolTip="添加/隐藏/排序卡片" />
+            </StackPanel>
+            <hc:ScrollViewer Name="ScrollViewer" Margin="0,0,0,-15">
             <ItemsControl
                 Name="CardApplication"
                 Margin="0,0,5,0"
@@ -52,6 +70,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </hc:ScrollViewer>
+            </hc:ScrollViewer>
+        </DockPanel>
     </hc:TransitioningContentControl>
 </UserControl>

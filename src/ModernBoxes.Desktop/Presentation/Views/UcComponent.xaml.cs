@@ -1,3 +1,5 @@
+using ModernBoxes.Presentation.Dialogs;
+using ModernBoxes.View;
 using System;
 using System.Windows.Controls;
 
@@ -8,6 +10,15 @@ namespace ModernBoxes.Presentation.Views
         public UcComponent()
         {
             InitializeComponent();
+        }
+
+        private void ManageCards_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var dialog = new BaseDialog();
+            dialog.SetTitle("管理小组件");
+            dialog.setDialogSize(565, 400);
+            dialog.SetContent(new UcAddCardApplicationDialog());
+            dialog.ShowDialog();
         }
 
         private void UserControl_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
