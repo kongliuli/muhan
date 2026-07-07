@@ -37,14 +37,7 @@
                         <hc:Card
                             Margin="0,0,0,10"
                             hc:BorderElement.CornerRadius="8"
-                            Opacity="0"
                             Visibility="{Binding IsChecked, Converter={StaticResource isShowCardWithChecked}}">
-                            <hc:Card.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    <TranslateTransform X="0" Y="0" />
-                                </TransformGroup>
-                            </hc:Card.RenderTransform>
                             <hc:Card.Header>
                                 <TextBlock Margin="11" Text="{Binding CardName}">
                                     <i:Interaction.Triggers>
@@ -56,43 +49,6 @@
                             </hc:Card.Header>
                             <ContentControl Height="{Binding CardHeight}" Content="{Binding CardContent}" />
                         </hc:Card>
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding IsChecked}" Value="True">
-                                <DataTrigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation
-                                                Storyboard.TargetProperty="Opacity"
-                                                From="0"
-                                                To="1"
-                                                Duration="0:0:0.3">
-                                                <DoubleAnimation.EasingFunction>
-                                                    <CubicEase EasingMode="EaseOut" />
-                                                </DoubleAnimation.EasingFunction>
-                                            </DoubleAnimation>
-                                            <DoubleAnimation
-                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
-                                                From="20"
-                                                To="0"
-                                                Duration="0:0:0.3">
-                                                <DoubleAnimation.EasingFunction>
-                                                    <CubicEase EasingMode="EaseOut" />
-                                                </DoubleAnimation.EasingFunction>
-                                            </DoubleAnimation>
-                                            <DoubleAnimation
-                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
-                                                From="0"
-                                                To="1"
-                                                Duration="0:0:0.3">
-                                                <DoubleAnimation.EasingFunction>
-                                                    <CubicEase EasingMode="EaseOut" />
-                                                </DoubleAnimation.EasingFunction>
-                                            </DoubleAnimation>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.EnterActions>
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
